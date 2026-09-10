@@ -1,0 +1,131 @@
+# Source registry for TechLens.
+# Add or remove sources here without touching application code.
+# source_type: rss | substack | web
+
+sources:
+
+  # ── Phase 1 sources ──────────────────────────────────────────
+
+  - id: deeplearning_ai_batch
+    name: "DeepLearning.AI — The Batch"
+    source_type: web
+    listing_url: "https://www.deeplearning.ai/the-batch/tag/letters/"
+    home_url: "https://www.deeplearning.ai/the-batch/"
+    # Requires at least one hyphen in slug — excludes nav pages like /the-batch/about
+    link_pattern: 'href="(/the-batch/[a-z0-9][a-z0-9-]*-[a-z0-9][a-z0-9-]*)"'
+    priority: 5
+    categories: [ai_ml, agentic_ai, enterprise_ai]
+    polling_frequency_minutes: 360
+    enabled: true
+
+  - id: berkeley_rdi
+    name: "The Agentic AI Weekly — Berkeley RDI"
+    feed_url: "https://berkeleyrdi.substack.com/feed"
+    home_url: "https://rdi.berkeley.edu/"
+    source_type: substack
+    priority: 5
+    categories: [agentic_ai, enterprise_ai, ai_ml]
+    polling_frequency_minutes: 720
+    enabled: true
+
+  - id: bytebytego
+    name: "ByteByteGo"
+    feed_url: "https://bytebytego.substack.com/feed"
+    home_url: "https://bytebytego.com/"
+    source_type: substack
+    priority: 5
+    categories: [software_architecture, infrastructure]
+    polling_frequency_minutes: 360
+    enabled: true
+
+  # ── Phase 2 sources ──────────────────────────────────────────
+
+  - id: anthropic_blog
+    name: "Anthropic Blog"
+    feed_url: "https://www.anthropic.com/rss.xml"
+    home_url: "https://www.anthropic.com/blog"
+    source_type: rss
+    priority: 5
+    categories: [ai_ml, agentic_ai, enterprise_ai, ai_safety]
+    polling_frequency_minutes: 360
+    enabled: true
+
+  - id: openai_blog
+    name: "OpenAI Blog"
+    feed_url: "https://openai.com/blog/rss/"
+    home_url: "https://openai.com/blog"
+    source_type: rss
+    priority: 5
+    categories: [ai_ml, agentic_ai, enterprise_ai]
+    polling_frequency_minutes: 360
+    enabled: true
+
+  - id: huggingface_blog
+    name: "Hugging Face Blog"
+    feed_url: "https://huggingface.co/blog/feed.xml"
+    home_url: "https://huggingface.co/blog"
+    source_type: rss
+    priority: 4
+    categories: [ai_ml, rag, embeddings, infrastructure]
+    polling_frequency_minutes: 720
+    enabled: true
+
+  - id: google_deepmind_blog
+    name: "Google DeepMind Blog"
+    feed_url: "https://deepmind.google/blog/rss.xml"
+    home_url: "https://deepmind.google/discover/blog/"
+    source_type: rss
+    priority: 4
+    categories: [ai_ml, ai_research, enterprise_ai]
+    polling_frequency_minutes: 720
+    enabled: true
+
+  - id: nvidia_developer_blog
+    name: "NVIDIA Developer Blog — AI"
+    feed_url: "https://developer.nvidia.com/blog/tag/generative-ai/feed/"
+    home_url: "https://developer.nvidia.com/blog/"
+    source_type: rss
+    priority: 4
+    categories: [ai_ml, infrastructure, enterprise_ai]
+    polling_frequency_minutes: 720
+    enabled: true
+
+  - id: aws_machine_learning_blog
+    name: "AWS Machine Learning Blog"
+    feed_url: "https://aws.amazon.com/blogs/machine-learning/feed/"
+    home_url: "https://aws.amazon.com/blogs/machine-learning/"
+    source_type: rss
+    priority: 3
+    categories: [enterprise_ai, infrastructure, ai_ml]
+    polling_frequency_minutes: 720
+    enabled: true
+
+  - id: microsoft_research_ai
+    name: "Microsoft Research — AI"
+    feed_url: "https://www.microsoft.com/en-us/research/feed/"
+    home_url: "https://www.microsoft.com/en-us/research/research-area/artificial-intelligence/"
+    source_type: rss
+    priority: 3
+    categories: [ai_research, ai_ml, enterprise_ai]
+    polling_frequency_minutes: 1440
+    enabled: true
+
+  - id: langchain_blog
+    name: "LangChain Blog"
+    feed_url: "https://blog.langchain.dev/rss/"
+    home_url: "https://blog.langchain.dev/"
+    source_type: rss
+    priority: 4
+    categories: [agentic_ai, rag, ai_ml]
+    polling_frequency_minutes: 720
+    enabled: true
+
+  - id: lmsys_blog
+    name: "LMSYS — LLM Systems Research"
+    feed_url: "https://lmsys.org/blog/index.xml"
+    home_url: "https://lmsys.org/blog/"
+    source_type: rss
+    priority: 4
+    categories: [ai_ml, infrastructure, ai_research]
+    polling_frequency_minutes: 1440
+    enabled: true

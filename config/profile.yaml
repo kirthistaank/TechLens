@@ -1,0 +1,59 @@
+user:
+  role: "Principal AI Architect"
+  career_goal: "Senior Staff / Principal AI Engineer / Enterprise AI Platform Architect"
+
+relevance_tiers:
+  tier1:
+    weight: 1.0
+    topics:
+      - agentic_ai
+      - multi_agent_architecture
+      - enterprise_ai
+      - ai_platform_architecture
+      - rag
+      - knowledge_graphs
+      - llm_evaluation
+      - ai_observability
+      - ai_governance
+      - ai_security
+      - ai_infrastructure
+      - distributed_systems
+      - system_design
+
+  tier2:
+    weight: 0.65
+    topics:
+      - generative_ai
+      - vector_databases
+      - model_serving
+      - kubernetes
+      - cloud_ai
+      - data_engineering
+      - ml_engineering
+
+  tier3:
+    weight: 0.35
+    topics:
+      - foundation_model_announcements
+      - multimodal_ai
+      - ai_research
+      - new_model_architectures
+
+  low_priority:
+    weight: 0.0
+    topics:
+      - consumer_ai_applications
+      - ai_funding_news
+      - generic_ai_productivity
+      - marketing_heavy_announcements
+      - repetitive_ai_news
+      - opinion_without_substance
+
+score_thresholds:
+  read: 75
+  skim: 45
+  ignore: 0
+
+digest:
+  max_daily_items: 50
+  min_score_for_digest: 60

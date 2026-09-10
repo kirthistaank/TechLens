@@ -1,0 +1,313 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1020"
+     viewBox="0 0 1100 1020"
+     font-family="Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+
+  <rect width="1100" height="1020" fill="#fff"/>
+
+  <defs>
+    <marker id="ma" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L8,4 L0,8z" fill="#D97706"/></marker>
+    <marker id="mp" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L8,4 L0,8z" fill="#7C3AED"/></marker>
+    <marker id="mt" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L8,4 L0,8z" fill="#0D9488"/></marker>
+    <marker id="ms" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L8,4 L0,8z" fill="#94A3B8"/></marker>
+    <marker id="mb" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L8,4 L0,8z" fill="#3B82F6"/></marker>
+    <marker id="mc" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L8,4 L0,8z" fill="#CBD5E1"/></marker>
+  </defs>
+
+  <!-- zone backgrounds -->
+  <rect x="16" y="118" width="222" height="274" rx="10" fill="#FFFBEB" opacity="0.7"/>
+  <rect x="16" y="402" width="222" height="242" rx="10" fill="#ECFDF5" opacity="0.6"/>
+  <rect x="264" y="118" width="334" height="624" rx="10" fill="#EFF6FF" opacity="0.5"/>
+  <rect x="654" y="118" width="432" height="520" rx="10" fill="#F5F3FF" opacity="0.4"/>
+
+  <!-- ══ HEADER ══ -->
+  <rect x="0" y="0" width="1100" height="72" fill="#0F172A"/>
+  <text x="550" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#F8FAFC" letter-spacing="3">TECHLENS</text>
+  <text x="550" y="54" text-anchor="middle" font-size="11" fill="#94A3B8" letter-spacing="0.5">Local-first AI Tech Intelligence Agent  ·  Pipeline Architecture</text>
+
+  <!-- column labels -->
+  <text x="128" y="108" text-anchor="middle" font-size="9" font-weight="700" fill="#B45309"  letter-spacing="1">DATA SOURCES</text>
+  <text x="432" y="108" text-anchor="middle" font-size="9" font-weight="700" fill="#1E40AF"  letter-spacing="1">PIPELINE  ·  9 STAGES</text>
+  <text x="872" y="108" text-anchor="middle" font-size="9" font-weight="700" fill="#5B21B6"  letter-spacing="1">AI MODELS  +  STORAGE</text>
+
+  <!-- ══ LEFT TOP: DATA SOURCES (x=24–232) ══ -->
+  <rect x="24" y="128" width="208" height="66" rx="8" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="128" y="151" text-anchor="middle" font-size="12" font-weight="600" fill="#78350F">RSS · Substack</text>
+  <text x="128" y="168" text-anchor="middle" font-size="9.5" fill="#92400E">ByteByteGo · Berkeley RDI</text>
+  <text x="128" y="182" text-anchor="middle" font-size="9"   fill="#B45309">OpenAI · Anthropic · HuggingFace</text>
+
+  <rect x="24" y="206" width="208" height="66" rx="8" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="128" y="229" text-anchor="middle" font-size="12" font-weight="600" fill="#78350F">Web · blogs</text>
+  <text x="128" y="246" text-anchor="middle" font-size="9.5" fill="#92400E">DeepLearning.AI · The Batch</text>
+  <text x="128" y="260" text-anchor="middle" font-size="9"   fill="#B45309">DeepMind · NVIDIA · LangChain · AWS</text>
+
+  <rect x="24" y="284" width="208" height="66" rx="8" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/>
+  <text x="128" y="307" text-anchor="middle" font-size="12" font-weight="600" fill="#78350F">APScheduler</text>
+  <text x="128" y="324" text-anchor="middle" font-size="9.5" fill="#92400E">daily 06:00  ·  manual trigger</text>
+  <text x="128" y="338" text-anchor="middle" font-size="9"   fill="#B45309">in-process  ·  no OS config</text>
+
+  <rect x="50" y="362" width="156" height="20" rx="10" fill="#FDE68A" stroke="#F59E0B" stroke-width="1"/>
+  <text x="128" y="376" text-anchor="middle" font-size="8.5" fill="#78350F">config/sources.yaml</text>
+
+  <!-- left section divider -->
+  <line x1="24" y1="396" x2="232" y2="396" stroke="#D1FAE5" stroke-width="1"/>
+  <text x="128" y="410" text-anchor="middle" font-size="8.5" font-weight="700" fill="#065F46" letter-spacing="1">GRAPH  ·  API</text>
+
+  <!-- ══ LEFT BOTTOM: GRAPH + API ══ -->
+  <!-- Kuzu y=418–512 (h=94), right edge x=232 -->
+  <rect x="24" y="418" width="208" height="94" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5"/>
+  <text x="128" y="441" text-anchor="middle" font-size="12" font-weight="600" fill="#065F46">Kuzu  (graph DB)</text>
+  <text x="128" y="459" text-anchor="middle" font-size="9.5" fill="#059669">Concept nodes  ·  ArticleNode nodes</text>
+  <text x="128" y="475" text-anchor="middle" font-size="9.5" fill="#059669">MENTIONS edges  ·  Cypher queries</text>
+  <text x="128" y="493" text-anchor="middle" font-size="9"   fill="#6EE7B7">embedded  ·  no extra process</text>
+
+  <!-- FastAPI y=524–578 (h=56), right edge x=232 -->
+  <rect x="24" y="524" width="208" height="56" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5"/>
+  <text x="128" y="547" text-anchor="middle" font-size="12" font-weight="600" fill="#065F46">FastAPI  REST API</text>
+  <text x="128" y="564" text-anchor="middle" font-size="9"   fill="#059669">/api/articles · /api/trends · /api/knowledge</text>
+
+  <!-- User actions y=588–630 (h=44) -->
+  <rect x="24" y="588" width="208" height="44" rx="8" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="128" y="606" text-anchor="middle" font-size="10"  fill="#166534">rate · save · important · archive</text>
+  <text x="128" y="622" text-anchor="middle" font-size="9"   fill="#166534">→ user_weights.yaml → Adapt Scoring</text>
+
+  <!-- ══ PIPELINE STAGES (x=272–592, w=320, badge cx=298, text cx=450)
+       h=52, pitch=68, tops: 128 196 264 332 400 468 536 604 672 ══ -->
+
+  <!-- S1 -->
+  <rect x="272" y="128" width="320" height="52" rx="8" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/>
+  <circle cx="298" cy="154" r="14" fill="#3B82F6"/>
+  <text x="298" y="159" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">1</text>
+  <text x="450" y="149" text-anchor="middle" font-size="11" font-weight="700" fill="#1E40AF">Ingest</text>
+  <text x="450" y="166" text-anchor="middle" font-size="9.5" fill="#3B82F6">Poll sources  ·  store raw articles  ·  URL dedup</text>
+  <line x1="432" y1="180" x2="432" y2="193" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#mc)"/>
+
+  <!-- S2 -->
+  <rect x="272" y="196" width="320" height="52" rx="8" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/>
+  <circle cx="298" cy="222" r="14" fill="#3B82F6"/>
+  <text x="298" y="227" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">2</text>
+  <text x="450" y="217" text-anchor="middle" font-size="11" font-weight="700" fill="#1E40AF">Extract</text>
+  <text x="450" y="234" text-anchor="middle" font-size="9.5" fill="#3B82F6">Trafilatura  ·  clean HTML  ·  language detect</text>
+  <line x1="432" y1="248" x2="432" y2="261" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#mc)"/>
+
+  <!-- S3 -->
+  <rect x="272" y="264" width="320" height="52" rx="8" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/>
+  <circle cx="298" cy="290" r="14" fill="#3B82F6"/>
+  <text x="298" y="295" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">3</text>
+  <text x="450" y="285" text-anchor="middle" font-size="11" font-weight="700" fill="#1E40AF">Deduplicate</text>
+  <text x="450" y="302" text-anchor="middle" font-size="9.5" fill="#3B82F6">URL/content hash  +  embedding cosine &lt; 0.08</text>
+  <line x1="432" y1="316" x2="432" y2="329" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#mc)"/>
+
+  <!-- S4 -->
+  <rect x="272" y="332" width="320" height="52" rx="8" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/>
+  <circle cx="298" cy="358" r="14" fill="#3B82F6"/>
+  <text x="298" y="363" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">4</text>
+  <text x="450" y="353" text-anchor="middle" font-size="11" font-weight="700" fill="#1E40AF">Score  (LLM)</text>
+  <text x="450" y="370" text-anchor="middle" font-size="9.5" fill="#3B82F6">0–100  ·  READ / SKIM / IGNORE  ·  rationale</text>
+  <line x1="432" y1="384" x2="432" y2="397" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#mc)"/>
+
+  <!-- S5 -->
+  <rect x="272" y="400" width="320" height="52" rx="8" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/>
+  <circle cx="298" cy="426" r="14" fill="#3B82F6"/>
+  <text x="298" y="431" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">5</text>
+  <text x="450" y="421" text-anchor="middle" font-size="11" font-weight="700" fill="#1E40AF">Summarize  (LLM)</text>
+  <text x="450" y="438" text-anchor="middle" font-size="9.5" fill="#3B82F6">what · why · architecture insight · tradeoffs</text>
+  <line x1="432" y1="452" x2="432" y2="465" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#mc)"/>
+
+  <!-- S6 -->
+  <rect x="272" y="468" width="320" height="52" rx="8" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+  <circle cx="298" cy="494" r="14" fill="#7C3AED"/>
+  <text x="298" y="499" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">6</text>
+  <text x="450" y="489" text-anchor="middle" font-size="11" font-weight="700" fill="#5B21B6">Extract Concepts  (LLM)</text>
+  <text x="450" y="506" text-anchor="middle" font-size="9.5" fill="#7C3AED">tech · patterns · companies · people → Kuzu graph</text>
+  <line x1="432" y1="520" x2="432" y2="533" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#mc)"/>
+
+  <!-- S7 -->
+  <rect x="272" y="536" width="320" height="52" rx="8" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+  <circle cx="298" cy="562" r="14" fill="#7C3AED"/>
+  <text x="298" y="567" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">7</text>
+  <text x="450" y="557" text-anchor="middle" font-size="11" font-weight="700" fill="#5B21B6">Trend Detection  (Agent)</text>
+  <text x="450" y="574" text-anchor="middle" font-size="9.5" fill="#7C3AED">concept clusters · 7/30d windows · LLM trend card</text>
+  <line x1="432" y1="588" x2="432" y2="601" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#mc)"/>
+
+  <!-- S8 -->
+  <rect x="272" y="604" width="320" height="52" rx="8" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+  <circle cx="298" cy="630" r="14" fill="#7C3AED"/>
+  <text x="298" y="635" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">8</text>
+  <text x="450" y="625" text-anchor="middle" font-size="11" font-weight="700" fill="#5B21B6">Cross-Source Synthesis  (LLM)</text>
+  <text x="450" y="642" text-anchor="middle" font-size="9.5" fill="#7C3AED">3+ articles · 2+ sources · per-source perspective</text>
+  <line x1="432" y1="656" x2="432" y2="669" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#mc)"/>
+
+  <!-- S9 -->
+  <rect x="272" y="672" width="320" height="52" rx="8" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/>
+  <circle cx="298" cy="698" r="14" fill="#3B82F6"/>
+  <text x="298" y="703" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">9</text>
+  <text x="450" y="693" text-anchor="middle" font-size="11" font-weight="700" fill="#1E40AF">Daily Digest</text>
+  <text x="450" y="710" text-anchor="middle" font-size="9.5" fill="#3B82F6">top scored articles assembled  ·  stored  ·  email</text>
+  <line x1="432" y1="724" x2="432" y2="796" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#mc)"/>
+
+  <!-- ══ RIGHT: AI MODELS + STORAGE (x=662–1082) ══ -->
+
+  <!-- SQLite y=128–248 (h=120) -->
+  <rect x="662" y="128" width="420" height="120" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5"/>
+  <text x="872" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#065F46">SQLite</text>
+  <text x="872" y="170" text-anchor="middle" font-size="9.5" fill="#059669">articles · scores · summaries · feedback</text>
+  <text x="872" y="188" text-anchor="middle" font-size="9.5" fill="#059669">digests · trends · syntheses · reading state</text>
+  <text x="872" y="208" text-anchor="middle" font-size="9"   fill="#6EE7B7">primary relational store  ·  single-file</text>
+
+  <!-- nomic-embed y=256–314 (h=58) -->
+  <rect x="662" y="256" width="420" height="58" rx="8" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+  <text x="872" y="278" text-anchor="middle" font-size="12" font-weight="600" fill="#5B21B6">nomic-embed-text  (Ollama)</text>
+  <text x="872" y="296" text-anchor="middle" font-size="9.5" fill="#7C3AED">768-dim vectors  ·  semantic dedup  ·  search</text>
+
+  <!-- ChromaDB y=322–378 (h=56) -->
+  <rect x="662" y="322" width="420" height="56" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5"/>
+  <text x="872" y="344" text-anchor="middle" font-size="12" font-weight="600" fill="#065F46">ChromaDB  (embedded)</text>
+  <text x="872" y="362" text-anchor="middle" font-size="9.5" fill="#059669">article embeddings  ·  cosine similarity search</text>
+
+  <!-- Abstraction pill y=386–408 -->
+  <rect x="678" y="386" width="388" height="22" rx="11" fill="#FAF5FF" stroke="#C4B5FD" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="872" y="401" text-anchor="middle" font-size="9" fill="#6D28D9">LLMProvider / EmbeddingProvider  abstraction</text>
+
+  <!-- Ollama y=416–558 (h=142 — trimmed to content) -->
+  <rect x="662" y="416" width="420" height="142" rx="8" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+  <text x="872" y="442" text-anchor="middle" font-size="12" font-weight="600" fill="#5B21B6">Ollama  (local)</text>
+  <text x="872" y="460" text-anchor="middle" font-size="10"  fill="#7C3AED">qwen3:32b  ·  num_ctx=8192</text>
+  <text x="872" y="480" text-anchor="middle" font-size="9.5" fill="#7C3AED">score  ·  summarize  ·  extract concepts</text>
+  <text x="872" y="498" text-anchor="middle" font-size="9.5" fill="#7C3AED">detect trends  ·  synthesize</text>
+  <text x="872" y="518" text-anchor="middle" font-size="9"   fill="#9F7AEA">stages 4 → 8  ·  ~99–248 LLM calls / day</text>
+  <text x="872" y="536" text-anchor="middle" font-size="9"   fill="#9F7AEA">No data leaves the machine</text>
+
+  <!-- ══ ARROWS ══ -->
+
+  <!-- A: Sources → S1  (amber bracket in left gap x=232–272)
+       bracket bar at x=242; ticks from source right edge x=232 to x=242 -->
+  <line x1="232" y1="161" x2="242" y2="161" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="232" y1="239" x2="242" y2="239" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="232" y1="317" x2="242" y2="317" stroke="#D97706" stroke-width="1.5" stroke-dasharray="2,4"/>
+  <line x1="242" y1="154" x2="242" y2="317" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polyline points="242,154 272,154" stroke="#D97706" stroke-width="2" fill="none" marker-end="url(#ma)"/>
+  <circle cx="242" cy="161" r="2.5" fill="#D97706"/>
+  <circle cx="242" cy="239" r="2.5" fill="#D97706"/>
+  <circle cx="242" cy="317" r="2"   fill="#D97706" opacity="0.55"/>
+  <text x="246" y="328" font-size="7.5" fill="#D97706" font-style="italic">trigger</text>
+
+  <!-- B: S6 → Kuzu  (teal solid = WRITE, exits pipeline LEFT at y=482 → Kuzu right at x=232)
+       Kuzu right edge entry points: C=465, B=482, D=500 (17-18px spacing) -->
+  <polyline points="272,482 232,482" stroke="#0D9488" stroke-width="2" fill="none" marker-end="url(#mt)"/>
+
+  <!-- C: Kuzu → S7  (teal dotted = READ, exits Kuzu right at y=465, routes via x=248 to S7 left x=272) -->
+  <polyline points="232,465 248,465 248,562 272,562"
+            stroke="#0D9488" stroke-width="1.5" stroke-dasharray="2,4" fill="none" marker-end="url(#mt)"/>
+
+  <!-- D: Kuzu → S8  (teal dotted = READ, exits Kuzu right at y=500, routes via x=258 to S8 left x=272) -->
+  <polyline points="232,500 258,500 258,630 272,630"
+            stroke="#0D9488" stroke-width="1.5" stroke-dasharray="2,4" fill="none" marker-end="url(#mt)"/>
+
+  <!-- E: User feedback → FastAPI  (blue dashed, upward within left col) -->
+  <polyline points="128,588 128,580" stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="3,3" fill="none" marker-end="url(#mb)"/>
+
+  <!-- F: FastAPI → Frontend  (blue, exits left col at x=232 y=551, routes via x=238 down to y=796)
+       x=238 lane: clear of source bracket (x=242, y=154-317) and Kuzu arrows (x=248/258, y=465+) -->
+  <polyline points="232,551 238,551 238,796" stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="4,3" fill="none" marker-end="url(#mb)"/>
+
+  <!-- G: S2 → SQLite  (slate solid = WRITE, right gap x=592–662) -->
+  <polyline points="592,222 662,222" stroke="#94A3B8" stroke-width="2" fill="none" marker-end="url(#ms)"/>
+
+  <!-- H: S3 → nomic-embed  (purple dashed = embed call) -->
+  <polyline points="592,284 662,284" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#mp)"/>
+
+  <!-- I: S3 → ChromaDB  (teal solid = WRITE embedding, L-shape via x=614) -->
+  <polyline points="592,298 614,298 614,350 662,350"
+            stroke="#0D9488" stroke-width="2" fill="none" marker-end="url(#mt)"/>
+
+  <!-- J: S4–S8 → Ollama  (purple LLM bracket at x=630 in 70px right gap; forward arrow = 32px) -->
+  <line x1="592" y1="358" x2="630" y2="358" stroke="#7C3AED" stroke-width="1.5"/>
+  <line x1="592" y1="426" x2="630" y2="426" stroke="#7C3AED" stroke-width="1.5"/>
+  <line x1="592" y1="494" x2="630" y2="494" stroke="#7C3AED" stroke-width="1.5"/>
+  <line x1="592" y1="562" x2="630" y2="562" stroke="#7C3AED" stroke-width="1.5"/>
+  <line x1="592" y1="630" x2="630" y2="630" stroke="#7C3AED" stroke-width="1.5"/>
+  <line x1="630" y1="358" x2="630" y2="630" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <polyline points="630,494 662,494" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#mp)"/>
+  <polyline points="662,504 630,504" stroke="#7C3AED" stroke-width="1"   stroke-dasharray="2,4" fill="none" marker-end="url(#mp)"/>
+
+  <!-- ══ FRONTEND ══ -->
+  <line x1="18" y1="804" x2="1082" y2="804" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="18" y="810" width="1064" height="22" rx="5" fill="#F1F5F9"/>
+  <text x="550" y="825" text-anchor="middle" font-size="9.5" font-weight="700" fill="#475569" letter-spacing="0.8">FRONTEND  ·  React + TypeScript + Vite + Tailwind CSS</text>
+
+  <!-- row 1: 6 tabs -->
+  <rect x="32"  y="840" width="148" height="48" rx="7" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="106" y="860" text-anchor="middle" font-size="10" font-weight="600" fill="#374151">Today's Brief</text>
+  <text x="106" y="876" text-anchor="middle" font-size="8.5" fill="#6B7280">daily digest · quick scan</text>
+
+  <rect x="194" y="840" width="148" height="48" rx="7" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="268" y="860" text-anchor="middle" font-size="10" font-weight="600" fill="#374151">Articles</text>
+  <text x="268" y="876" text-anchor="middle" font-size="8.5" fill="#6B7280">scored list · feedback</text>
+
+  <rect x="356" y="840" width="148" height="48" rx="7" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="430" y="860" text-anchor="middle" font-size="10" font-weight="600" fill="#374151">Search</text>
+  <text x="430" y="876" text-anchor="middle" font-size="8.5" fill="#6B7280">semantic · natural language</text>
+
+  <rect x="518" y="840" width="148" height="48" rx="7" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="592" y="860" text-anchor="middle" font-size="10" font-weight="600" fill="#374151">Saved</text>
+  <text x="592" y="876" text-anchor="middle" font-size="8.5" fill="#6B7280">bookmarked for later</text>
+
+  <rect x="680" y="840" width="148" height="48" rx="7" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="754" y="860" text-anchor="middle" font-size="10" font-weight="600" fill="#374151">Archived</text>
+  <text x="754" y="876" text-anchor="middle" font-size="8.5" fill="#6B7280">done reading</text>
+
+  <rect x="842" y="840" width="148" height="48" rx="7" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
+  <text x="916" y="860" text-anchor="middle" font-size="10" font-weight="600" fill="#374151">Sources</text>
+  <text x="916" y="876" text-anchor="middle" font-size="8.5" fill="#6B7280">toggle · manage feeds</text>
+
+  <!-- row 2: 3 KG tabs -->
+  <rect x="178" y="902" width="220" height="48" rx="7" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+  <text x="288" y="922" text-anchor="middle" font-size="10" font-weight="600" fill="#5B21B6">Trends</text>
+  <text x="288" y="938" text-anchor="middle" font-size="8.5" fill="#7C3AED">concept clusters · 7d / 30d</text>
+
+  <rect x="414" y="902" width="220" height="48" rx="7" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+  <text x="524" y="922" text-anchor="middle" font-size="10" font-weight="600" fill="#5B21B6">Synthesis</text>
+  <text x="524" y="938" text-anchor="middle" font-size="8.5" fill="#7C3AED">cross-source · per-source insight</text>
+
+  <rect x="650" y="902" width="220" height="48" rx="7" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+  <text x="760" y="922" text-anchor="middle" font-size="10" font-weight="600" fill="#5B21B6">Knowledge Map</text>
+  <text x="760" y="938" text-anchor="middle" font-size="8.5" fill="#7C3AED">seen vs. read · foundational gaps</text>
+
+  <!-- ══ LEGEND ══ -->
+  <line x1="18" y1="964" x2="1082" y2="964" stroke="#E2E8F0" stroke-width="1"/>
+
+  <text x="30" y="982" font-size="8.5" fill="#94A3B8" font-weight="700" letter-spacing="0.5">BOXES</text>
+  <rect x="76"  y="971" width="12" height="12" rx="2" fill="#EFF6FF" stroke="#3B82F6" stroke-width="1.5"/><text x="94"  y="983" font-size="8.5" fill="#475569">Core pipeline</text>
+  <rect x="190" y="971" width="12" height="12" rx="2" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/><text x="208" y="983" font-size="8.5" fill="#475569">Knowledge graph</text>
+  <rect x="338" y="971" width="12" height="12" rx="2" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5"/><text x="356" y="983" font-size="8.5" fill="#475569">Storage / API</text>
+  <rect x="450" y="971" width="12" height="12" rx="2" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5"/><text x="468" y="983" font-size="8.5" fill="#475569">Data sources</text>
+
+  <text x="30" y="1006" font-size="8.5" fill="#94A3B8" font-weight="700" letter-spacing="0.5">ARROWS</text>
+  <line x1="78"  y1="1001" x2="100" y2="1001" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4,3"/><polygon points="98,997 106,1001 98,1005" fill="#D97706"/>
+  <text x="112" y="1005" font-size="8.5" fill="#475569">ingest / trigger</text>
+
+  <line x1="218" y1="1001" x2="240" y2="1001" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="5,3"/><polygon points="238,997 246,1001 238,1005" fill="#7C3AED"/>
+  <text x="252" y="1005" font-size="8.5" fill="#475569">LLM call</text>
+
+  <line x1="320" y1="1001" x2="342" y2="1001" stroke="#7C3AED" stroke-width="1"   stroke-dasharray="2,4"/><polygon points="340,997 348,1001 340,1005" fill="#7C3AED"/>
+  <text x="354" y="1005" font-size="8.5" fill="#475569">LLM response</text>
+
+  <line x1="448" y1="1001" x2="470" y2="1001" stroke="#0D9488" stroke-width="2"/><polygon points="468,997 476,1001 468,1005" fill="#0D9488"/>
+  <text x="482" y="1005" font-size="8.5" fill="#475569">graph / vector write</text>
+
+  <line x1="608" y1="1001" x2="630" y2="1001" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="2,4"/><polygon points="628,997 636,1001 628,1005" fill="#0D9488"/>
+  <text x="642" y="1005" font-size="8.5" fill="#475569">graph / vector read</text>
+
+  <line x1="762" y1="1001" x2="784" y2="1001" stroke="#94A3B8" stroke-width="2"/><polygon points="782,997 790,1001 782,1005" fill="#94A3B8"/>
+  <text x="796" y="1005" font-size="8.5" fill="#475569">storage write</text>
+
+  <line x1="890" y1="1001" x2="912" y2="1001" stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="3,3"/><polygon points="910,997 918,1001 910,1005" fill="#3B82F6"/>
+  <text x="924" y="1005" font-size="8.5" fill="#475569">API / feedback</text>
+
+</svg>

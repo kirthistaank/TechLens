@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<!-- Fixture HTML listing page for web_collector unit tests. -->
+<html>
+<head><title>The Batch — Letters</title></head>
+<body>
+  <nav>
+    <!-- Nav links — single-word slugs, should be filtered out by link_pattern -->
+    <a href="/the-batch/about">About</a>
+    <a href="/the-batch/search">Search</a>
+  </nav>
+
+  <!-- Valid article links — multi-word slugs with hyphens, should be collected -->
+  <a href="/the-batch/building-production-rag-systems">Building Production RAG Systems</a>
+  <a href="/the-batch/agentic-ai-weekly-sep-2026">Agentic AI Weekly Sep 2026</a>
+  <a href="/the-batch/mcp-architecture-patterns-enterprise">MCP Architecture Patterns for Enterprise</a>
+
+  <!-- Duplicate — same URL appears twice, should only be collected once -->
+  <a href="/the-batch/building-production-rag-systems">Building Production RAG Systems (duplicate)</a>
+</body>
+</html>
