@@ -82,7 +82,7 @@ Open two terminals:
 ```bash
 # Terminal 1 — backend
 make backend
-# or: PYTHONPATH=src uv run uvicorn techlens.api.main:app --reload --port 8000
+# or: PYTHONPATH=src uv run uvicorn techlens.api.main:app --reload --port 8005
 
 # Terminal 2 — frontend dev server
 make frontend
@@ -348,9 +348,9 @@ Editable source: [`docs/architecture.svg`](docs/architecture.svg)
 
 | Document | What it covers |
 |---|---|
-| [`PROJECT.md`](PROJECT.md) | Full product vision, success criteria, UX spec, phased roadmap |
-| [`TECH.md`](TECH.md) | Tech stack decisions, storage strategy, repo layout |
-| [`AGENTS.md`](AGENTS.md) | Pipeline stage specs, agent designs for Phase 3/4 |
+| [`docs/PROJECT.md`](docs/PROJECT.md) | Full product vision, success criteria, UX spec, phased roadmap |
+| [`docs/TECH.md`](docs/TECH.md) | Tech stack decisions, storage strategy, repo layout |
+| [`docs/AGENTS.md`](docs/AGENTS.md) | Pipeline stage specs, agent designs for Phase 3/4 |
 | [`docs/architecture.svg`](docs/architecture.svg) | Full pipeline architecture diagram — 9 stages, storage, AI, frontend |
 | [`docs/inference-calls.md`](docs/inference-calls.md) | Every LLM call in the pipeline: which model, which stage, how many per day, throttling controls, and cost at scale |
 | [`docs/architecture-tradeoffs.md`](docs/architecture-tradeoffs.md) | Every non-obvious tech decision with alternatives considered — Ollama vs cloud, Kuzu vs Neo4j, SQLite vs Postgres, deterministic pipeline vs agents, and more |

@@ -8,7 +8,7 @@ TechLens was built local-first by design — no cloud dependencies, no API keys,
 
 Everything hinges on one question: **do you keep Ollama or replace it?**
 
-Ollama runs `qwen2.5:7b` locally. That model needs **8GB+ RAM** just to load. Free cloud tiers almost never offer that. This single constraint determines which hosting path makes sense for you.
+Ollama runs `qwen3:32b` locally. That model needs **~20GB RAM** just to load. Free cloud tiers almost never offer that. This single constraint determines which hosting path makes sense for you.
 
 ---
 
@@ -29,7 +29,7 @@ The only cloud platform that gives enough free compute to run Ollama:
 
 **Why it works:**
 - Ollama runs on ARM — no compatibility issues
-- 24GB RAM is comfortable for `qwen2.5:7b` (needs ~8GB)
+- 24GB RAM is sufficient for `qwen3:32b` (needs ~20GB)
 - Persistent storage for SQLite DB and ChromaDB
 - APScheduler runs inside the app — no separate scheduler needed
 
@@ -40,7 +40,7 @@ The only cloud platform that gives enough free compute to run Ollama:
 - Update `ollama_base_url` in config if running Ollama as a separate service
 - Mount volumes for `techlens.db` and `data/chroma`
 
-**Verdict:** Best option if you want zero ongoing cost and no architecture changes.
+**Verdict:** Best option if you want zero ongoing cost and no architecture changes. Note: 24GB is tight for `qwen3:32b` (~20GB model weight). Consider switching to `qwen3:14b` (~9GB) on this tier for comfortable headroom.
 
 ---
 

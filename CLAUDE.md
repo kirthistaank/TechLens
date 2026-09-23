@@ -1,6 +1,6 @@
 # CLAUDE.md — Working agreements for this project
 
-Auto-loaded every session. Full spec in `PROJECT.md`, `AGENTS.md`, `TECH.md`.
+Auto-loaded every session. Full spec in `docs/PROJECT.md`, `docs/AGENTS.md`, `docs/TECH.md`.
 
 ## Project one-liner
 
@@ -19,7 +19,7 @@ Local-first AI Tech Intelligence Agent. Ingests tech/AI sources, filters ruthles
 
 - Python 3.11+, `uv` package manager, `ruff` formatter
 - FastAPI backend, React + TypeScript + Vite frontend
-- SQLite (v1), ChromaDB (Phase 2), Neo4j only if Phase 3 genuinely needs it
+- SQLite (v1), ChromaDB (Phase 2), Kuzu embedded graph DB (Phase 3)
 - APScheduler (in-process scheduler — no OS config)
 - Pydantic v2 for all config and data models
 

@@ -6,7 +6,7 @@
 help:
 	@echo "TechLens dev commands:"
 	@echo "  make install    — install all Python dependencies"
-	@echo "  make backend    — start FastAPI backend on :8000"
+	@echo "  make backend    — start FastAPI backend on :8005"
 	@echo "  make frontend   — start React dev server on :5173"
 	@echo "  make pipeline   — run the pipeline once manually"
 
@@ -16,7 +16,7 @@ install:
 
 ## Start FastAPI backend with hot-reload
 backend:
-	PYTHONPATH=src uv run uvicorn techlens.api.main:app --reload --port 8000
+	PYTHONPATH=src uv run uvicorn techlens.api.main:app --reload --port 8005
 
 ## Start React/Vite frontend dev server
 frontend:

@@ -8,7 +8,7 @@
 
 TechLens is a local-first AI tech intelligence agent I built as a side project. Every day it ingests 15+ RSS feeds and web sources, extracts full article content, embeds them into a vector store, scores each article for relevance to my career goals as a Principal AI Architect, summarises the ones worth reading, and delivers a curated daily brief — all running entirely on my laptop with no cloud dependencies.
 
-The stack: Python + FastAPI backend, React + TypeScript frontend, SQLite, ChromaDB, and Ollama running `qwen2.5:7b` locally.
+The stack: Python + FastAPI backend, React + TypeScript frontend, SQLite, ChromaDB, Kuzu, and Ollama running `qwen3:32b` locally.
 
 This post is a collection of hard-won lessons from building it — bugs, architecture mistakes, and things I'd do differently.
 
@@ -70,7 +70,7 @@ def get_collection() -> chromadb.Collection:
 
 **The bug:** Articles were being scored with `score: 0.0` and `"Scoring failed."` rationale, despite Ollama appearing healthy.
 
-**Root cause:** I had set `keep_alive: 0` to unload the model from memory after each call (freeing RAM between pipeline stages). What I didn't account for: when the next call comes in, Ollama has to reload `qwen2.5:7b` from disk before it can run inference. On a laptop, that reload + inference easily exceeds the default 180-second HTTP timeout.
+**Root cause:** I had set `keep_alive: 0` to unload the model from memory after each call (freeing RAM between pipeline stages). What I didn't account for: when the next call comes in, Ollama has to reload `qwen3:32b` from disk before it can run inference. On a laptop, that reload + inference easily exceeds the default 180-second HTTP timeout.
 
 **Fix:** Increase the timeout significantly for local LLM calls:
 
@@ -181,7 +181,7 @@ href="(/the-batch/[a-z0-9][a-z0-9-]*-[a-z0-9][a-z0-9-]*)"
 I built `LLMProvider` and `EmbeddingProvider` ABCs from the start, even though I only had one implementation each (Ollama). This felt like over-engineering at the time.
 
 It paid off when:
-- I needed to swap `qwen3:32b` for `qwen2.5:7b` (a one-line config change)
+- I needed to swap `qwen3:32b` for `qwen3:32b` (a one-line config change)
 - I added a separate embedding model (`nomic-embed-text`) alongside the chat model
 - Unit tests could use `MockLLMProvider` without touching Ollama
 
@@ -257,8 +257,8 @@ Building TechLens took longer than expected, mostly because of the bugs above. B
 
 The most important meta-lesson: **build the boring thing first.** The pipeline was working end-to-end in Phase 1 (SQLite, no vectors, no dedup) before I added any Phase 2 complexity. That foundation meant every Phase 2 bug was isolated — I knew the data was good and the issue was in the new layer.
 
-The code is on my local machine for now. Maybe Phase 3 next — knowledge graph of concepts across articles, trend detection, and a "what should I learn next" recommender. But first, let the fan cool down.
+Phase 3 is now complete — Kuzu embedded graph for concept extraction, an autonomous trend detection agent querying concept clusters across rolling time windows, cross-source synthesis that surfaces what each source uniquely adds, and a knowledge map that tracks which concepts you've seen vs. actually read. Phase 4 (interview coach, knowledge-gap detection) is next.
 
 ---
 
-*Stack: Python 3.11 · FastAPI · React + TypeScript · Vite · SQLite · ChromaDB · Ollama (qwen2.5:7b + nomic-embed-text) · APScheduler · Tailwind CSS*
+*Stack: Python 3.11 · FastAPI · React + TypeScript · Vite · SQLite · ChromaDB · Kuzu · Ollama (qwen3:32b + nomic-embed-text) · APScheduler · Tailwind CSS*

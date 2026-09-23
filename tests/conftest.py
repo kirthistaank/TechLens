@@ -82,3 +82,70 @@ def mock_summary_llm() -> MockSummaryLLM:
 @pytest.fixture()
 def mock_failing_llm() -> MockFailingLLM:
     return MockFailingLLM()
+
+
+class MockExtractorLLM(LLMProvider):
+    """Mock LLM that returns 3 valid concept extraction entries."""
+
+    def chat(self, system: str, user: str, json_mode: bool = False) -> str:
+        return json.dumps({
+            "concepts": [
+                {"name": "Agent Memory", "type": "architecture_pattern", "role": "primary"},
+                {"name": "Retrieval Augmented Generation", "type": "technology", "role": "mentions"},
+                {"name": "Anthropic", "type": "company", "role": "mentions"},
+            ]
+        })
+
+    def is_available(self) -> bool:
+        return True
+
+
+class MockTrendLLM(LLMProvider):
+    """Mock LLM that returns a valid trend card."""
+
+    def chat(self, system: str, user: str, json_mode: bool = False) -> str:
+        return json.dumps({
+            "name": "Rising Agent Memory Trend",
+            "summary": "Multiple sources this week converged on production agent memory design. "
+                       "The core pattern is separating episodic from semantic memory. "
+                       "Principal architects should treat memory as a first-class infrastructure concern.",
+            "confidence": "high",
+        })
+
+    def is_available(self) -> bool:
+        return True
+
+
+class MockSynthesisLLM(LLMProvider):
+    """Mock LLM that returns a valid synthesis card."""
+
+    def chat(self, system: str, user: str, json_mode: bool = False) -> str:
+        return json.dumps({
+            "topic": "Agent Memory In Production Systems",
+            "summary": "Three sources independently reached the same conclusion: production agents "
+                       "need explicit memory boundaries. Episodic and semantic stores require "
+                       "separate retrieval strategies.",
+            "unique_perspectives": [
+                "Source A focused on benchmark performance of memory retrieval.",
+                "Source B analysed the privacy implications of shared memory in multi-tenant systems.",
+            ],
+            "key_insight": "Treat the memory tier as a microservice boundary, not an implementation detail.",
+        })
+
+    def is_available(self) -> bool:
+        return True
+
+
+@pytest.fixture()
+def mock_extractor_llm() -> MockExtractorLLM:
+    return MockExtractorLLM()
+
+
+@pytest.fixture()
+def mock_trend_llm() -> MockTrendLLM:
+    return MockTrendLLM()
+
+
+@pytest.fixture()
+def mock_synthesis_llm() -> MockSynthesisLLM:
+    return MockSynthesisLLM()
