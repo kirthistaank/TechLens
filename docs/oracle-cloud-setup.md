@@ -269,6 +269,37 @@ docker-compose down -v
 
 ---
 
+## Part 4.5: Build Frontend (Required for Docker)
+
+The Docker image includes the built frontend. You must build it first:
+
+```bash
+cd ~/techlens/frontend
+
+# Install Node.js (one time only)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+source "$NVM_DIR/nvm.sh"
+nvm install --lts
+
+# Install npm dependencies
+npm install
+
+# Build production bundle
+npm run build
+
+# Verify dist folder was created
+ls -la dist/
+# Should show: index.html, css/, js/ folders
+
+# Return to project root
+cd ~/techlens
+```
+
+Without this step, Docker build will fail with: `"/frontend/dist": not found`
+
+---
+
 ## Part 5: TechLens Configuration
 
 ### 5.1 Update config.py for Ollama URL
@@ -510,61 +541,165 @@ docker restart ollama techlens
 
 ---
 
-## Part 10: Troubleshooting
+## Part 10: Docker Build & Deployment
+
+### 10.1 Docker Compose Setup
+
+Docker Compose orchestrates both Ollama and TechLens backend with a single command:
+
+```bash
+cd ~/techlens
+
+# Start all services
+docker compose up -d
+
+# Monitor the build (first time takes ~2-3 minutes)
+docker compose logs -f techlens
+
+# Check service status
+docker compose ps
+# Should show: ollama (healthy) and techlens (healthy)
+```
+
+### 10.2 Dockerfile Details
+
+The Dockerfile (located at project root) does:
+1. Starts with Python 3.11 base image
+2. Installs `uv` package manager
+3. Copies pyproject.toml and project source
+4. Runs `uv sync` to install all dependencies
+5. Creates persistent storage directories
+6. Exposes port 8000
+7. Starts Uvicorn server
+
+Key environment variables set by docker-compose:
+```yaml
+OLLAMA_BASE_URL: http://ollama:11434
+OLLAMA_MODEL: qwen3:14b
+OLLAMA_NUM_CTX: 8192
+DATABASE_URL: sqlite:////data/db/techlens.db
+CHROMA_PATH: /data/chroma
+```
+
+### 10.3 Useful Docker Compose Commands
+
+```bash
+# View all services
+docker compose ps
+
+# View logs
+docker compose logs techlens
+docker compose logs ollama
+docker compose logs -f  # Stream live
+
+# Restart services
+docker compose restart techlens
+docker compose restart ollama
+
+# Stop all
+docker compose stop
+
+# Start all
+docker compose start
+
+# Remove containers (keeps data)
+docker compose down
+
+# Remove everything including volumes
+docker compose down -v
+
+# Rebuild image (after code changes)
+docker compose build --no-cache techlens
+```
+
+---
+
+## Part 11: Troubleshooting Docker & Deployment
+
+### Issue: `docker-compose: command not found`
+
+**Solution:** Use `docker compose` (with space, not hyphen). Modern Docker includes Compose as a subcommand:
+
+```bash
+docker compose up -d  # Correct
+docker-compose up -d  # Wrong (old syntax)
+```
+
+### Issue: Docker build fails with `/frontend/dist: not found`
+
+**Error:**
+```
+failed to compute cache key: ... "/frontend/dist": not found
+```
+
+**Solution:** Build the frontend first:
+
+```bash
+cd ~/techlens/frontend
+npm install
+npm run build
+cd ~/techlens
+docker compose build --no-cache techlens
+```
+
+### Issue: Docker build fails with `uv sync` error
+
+**Error:**
+```
+error: Unable to find lockfile at `uv.lock`, but `--frozen` was provided
+```
+
+**Solution:** Use the updated Dockerfile (just `RUN uv sync`, not `--frozen`).
 
 ### Issue: Ollama stuck downloading model
 
 ```bash
-# Check logs
-docker logs ollama
-
-# If stuck, restart Ollama
-docker restart ollama
-
-# Re-pull model
-docker exec ollama ollama pull qwen3:14b
+docker compose logs ollama
+docker compose restart ollama
+docker exec techlens-ollama ollama pull qwen3:14b
 ```
 
 ### Issue: Out of disk space
 
 ```bash
-# Check disk usage
 df -h
-
-# Clean up Docker (removes unused images/containers)
 docker system prune -a
-
-# If still low, delete old Ollama models
-docker exec ollama ollama rm <model-name>
+docker exec techlens-ollama ollama rm <model-name>
 ```
 
 ### Issue: API not responding
 
 ```bash
-# Check if containers are running
-docker ps
-
-# Check TechLens logs for errors
-docker logs techlens
-
-# Verify network connectivity
+docker compose ps
+docker compose logs techlens
 curl http://localhost:8000/health
-
-# Check if port 8000 is listening
 netstat -tuln | grep 8000
 ```
 
-### Issue: Ollama API error (connection refused)
+### Issue: TechLens backend crashes
 
 ```bash
-# Verify Ollama is running
-docker ps | grep ollama
+docker compose logs techlens  # Check full logs
+docker compose restart techlens
+docker compose logs -f techlens  # Stream logs
+```
 
-# Check if port 11434 is open
-netstat -tuln | grep 11434
+### Issue: Database permission denied
 
-# Restart Ollama
-docker restart ollama
+```bash
+docker compose exec techlens bash
+chmod 777 /data/db
+docker compose restart techlens
+```
+
+### Issue: Frontend blank page
+
+```bash
+ls -la ~/techlens/frontend/dist/
+docker compose exec techlens ls -la /app/frontend/dist/
+cd ~/techlens/frontend && npm run build
+cd ~/techlens && docker compose build --no-cache techlens
+docker compose restart techlens
 ```
 
 ---
@@ -619,39 +754,156 @@ http://<public-ip>:8000/docs
 
 ---
 
-## Reference Commands
+## Part 13: Docker Compose vs Manual Docker
+
+### Why docker-compose.yml?
+
+Instead of running multiple manual `docker run` commands:
+
+```bash
+# ❌ Manual (error-prone, hard to manage)
+docker run -d --name ollama ollama/ollama:latest
+docker run -d --name techlens --link ollama:ollama techlens:latest
+# ...many more flags
+```
+
+Use docker-compose (single source of truth):
+
+```bash
+# ✅ Docker Compose (clean, reproducible)
+docker compose up -d
+docker compose down
+docker compose restart
+```
+
+### Files Created for TechLens
+
+| File | Purpose |
+|---|---|
+| `Dockerfile` | Build TechLens backend image |
+| `docker-compose.yml` | Orchestrate Ollama + TechLens |
+| `.dockerignore` | Exclude unnecessary files from build |
+
+---
+
+## Part 14: Reference Commands
+
+### Docker Compose Commands
+
+```bash
+# Start all services
+docker compose up -d
+
+# Stop all services
+docker compose stop
+
+# Restart specific service
+docker compose restart techlens
+docker compose restart ollama
+
+# View logs
+docker compose logs
+docker compose logs -f techlens  # Stream TechLens logs
+docker compose logs -f ollama    # Stream Ollama logs
+
+# Execute command in container
+docker compose exec techlens bash
+docker compose exec ollama ollama list
+
+# Remove containers (keeps data)
+docker compose down
+
+# Remove everything including volumes
+docker compose down -v
+
+# Rebuild image after code changes
+docker compose build --no-cache techlens
+```
+
+### SSH & System Commands
 
 ```bash
 # SSH into instance
 ssh -i ~/.ssh/your-private-key.key opc@<public-ip>
 
+# Check disk usage
+df -h
+
+# Check instance CPU/memory
+top
+
+# View network connections
+netstat -tuln
+
+# View running processes
+ps aux | grep docker
+ps aux | grep ollama
+```
+
+### Manual Docker Commands (if not using compose)
+
+```bash
 # View running containers
 docker ps
 
-# View all containers (including stopped)
+# View all containers
 docker ps -a
-
-# Stop all containers
-docker stop $(docker ps -q)
 
 # View container logs
 docker logs -f <container-name>
 
-# Execute command in container
-docker exec <container-name> <command>
+# Stop specific container
+docker stop <container-id>
 
-# Delete container (stop first)
-docker rm <container-name>
+# Delete container
+docker rm <container-id>
 
-# Check Ollama models
-docker exec ollama ollama list
+# Check Docker disk usage
+docker system df
+```
 
-# Test Ollama API
+### API Testing
+
+```bash
+# Test Ollama health
 curl http://localhost:11434/api/tags
 
-# Test TechLens API
+# Test TechLens health
 curl http://localhost:8000/health
+
+# List all Ollama models
+docker compose exec ollama ollama list
+
+# Test inference
+curl http://localhost:11434/api/generate -d '{
+  "model": "qwen3:14b",
+  "prompt": "What is TechLens?",
+  "stream": false
+}'
 ```
+
+---
+
+## Part 15: What Was Changed During Setup
+
+### Docker Files Created
+- **Dockerfile:** Multi-stage Python build, installs deps with uv, serves frontend + backend
+- **docker-compose.yml:** Orchestrates Ollama + TechLens with health checks
+- **.dockerignore:** Excludes unnecessary files from Docker context
+
+### Fixes Applied to Files
+| Issue | Fix | File |
+|---|---|---|
+| `/frontend/dist/` missing | Build frontend before Docker build | oracle-cloud-setup.md |
+| `uv venv` + pip not found | Simplified to `uv sync` | Dockerfile |
+| Obsolete version field | Removed `version: '3.8'` | docker-compose.yml |
+| `--frozen` lock file error | Removed `--frozen` flag | Dockerfile |
+
+### Common Gotchas Discovered
+1. **Frontend build required** — Must run `npm run build` before Docker build
+2. **uv.lock not present** — Can't use `--frozen` without lock file
+3. **docker-compose vs docker compose** — New Docker uses space, not hyphen
+4. **Ollama model download** — Takes 5-10 min on first run, be patient
 
 ---
 
@@ -659,16 +911,40 @@ curl http://localhost:8000/health
 
 - **Compute:** Oracle Cloud VM.Standard.A1.Flex (2 OCPU, 12GB RAM, Always Free)
 - **OS:** Oracle Linux 9
-- **Runtime:** Docker
-- **LLM:** Ollama + qwen3:14b
-- **Backend:** Python 3.11 · FastAPI
-- **Frontend:** React + TypeScript + Vite
-- **Database:** SQLite
-- **Vector DB:** ChromaDB
-- **Package Manager:** uv
+- **Container Runtime:** Docker with Docker Compose
+- **Orchestration:** docker-compose.yml (Ollama + TechLens)
+- **LLM:** Ollama + qwen3:14b (~9GB)
+- **Backend:** Python 3.11 · FastAPI · Uvicorn
+- **Frontend:** React + TypeScript + Vite (built → served as static files)
+- **Database:** SQLite (persisted to `/data/db/`)
+- **Vector DB:** ChromaDB (persisted to `/data/chroma/`)
+- **Package Manager:** uv (fast Python package management)
 
 ---
 
-**Last updated:** 2026-09-23
-**Status:** Production-ready for single-user local-first deployment
+## Quick Start (After Instance Setup)
+
+```bash
+# 1. SSH into instance
+ssh -i ~/.ssh/key opc@<public-ip>
+
+# 2. Clone repo
+cd ~ && git clone <repo-url> && cd techlens
+
+# 3. Build frontend
+cd frontend && npm install && npm run build && cd ..
+
+# 4. Start all services
+docker compose up -d
+
+# 5. Verify
+docker compose ps
+curl http://localhost:8000/health
+```
+
+---
+
+**Last updated:** 2026-09-23  
+**Status:** Production-ready for single-user local-first AI tech intelligence  
+**Verified on:** Oracle Cloud VM.Standard.A1.Flex · Oracle Linux 9 · Docker Compose v5.5.1
 
