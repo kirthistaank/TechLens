@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # Ollama LLM service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: techlens-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama/models
+    environment:
+      - OLLAMA_PULL_TIMEOUT=300s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # TechLens FastAPI backend
+  techlens:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techlens-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - techlens-data:/data
+    environment:
+      # LLM Configuration
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=qwen3:14b
+      - OLLAMA_NUM_CTX=8192
+
+      # Database paths
+      - DATABASE_URL=sqlite:////data/db/techlens.db
+      - CHROMA_PATH=/data/chroma
+
+      # Logging
+      - LOG_LEVEL=INFO
+
+      # Python settings
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  # Ollama models (persistent across container restarts)
+  ollama-models:
+    driver: local
+
+  # TechLens data (SQLite DB + ChromaDB)
+  techlens-data:
+    driver: local
+
+networks:
+  default:
+    name: techlens-network
+    driver: bridge
