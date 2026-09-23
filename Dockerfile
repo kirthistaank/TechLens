@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir uv
 # Copy project files
 COPY pyproject.toml pyproject.toml
 COPY src/ src/
+COPY config/ config/
 COPY frontend/dist/ frontend/dist/
 
 # Install dependencies using uv
@@ -25,7 +26,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/digest/daily')" || exit 1
 
 # Expose port
 EXPOSE 8000
