@@ -12,7 +12,7 @@ COPY src/ src/
 COPY frontend/dist/ frontend/dist/
 
 # Install dependencies using uv
-RUN uv sync --frozen --no-dev
+RUN uv sync
 
 # Create directories for persistent storage
 RUN mkdir -p /data/db /data/chroma && \
