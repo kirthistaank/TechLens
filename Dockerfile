@@ -1,6 +1,5 @@
-# Multi-stage build for TechLens backend
-# Stage 1: Build dependencies
-FROM python:3.11-slim as builder
+# TechLens backend Docker image
+FROM python:3.11-slim
 
 WORKDIR /app
 
@@ -9,31 +8,20 @@ RUN pip install --no-cache-dir uv
 
 # Copy project files
 COPY pyproject.toml pyproject.toml
-
-# Create virtual environment and install dependencies
-RUN uv venv /opt/venv && \
-    /opt/venv/bin/pip install --no-cache-dir -e .
-
-# Stage 2: Runtime
-FROM python:3.11-slim
-
-WORKDIR /app
-
-# Copy virtual environment from builder
-COPY --from=builder /opt/venv /opt/venv
-
-# Set environment variables
-ENV PATH="/opt/venv/bin:$PATH" \
-    PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
-
-# Copy source code
 COPY src/ src/
 COPY frontend/dist/ frontend/dist/
+
+# Install dependencies using uv
+RUN uv sync --frozen --no-dev
 
 # Create directories for persistent storage
 RUN mkdir -p /data/db /data/chroma && \
     chmod -R 777 /data
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/app/.venv/bin:$PATH"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
