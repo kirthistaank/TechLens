@@ -10,6 +10,14 @@ services:
       - ollama-models:/root/.ollama/models
     environment:
       - OLLAMA_PULL_TIMEOUT=300s
+    entrypoint: |
+      /bin/sh -c "
+      /bin/ollama serve &
+      sleep 5
+      /bin/ollama pull mistral:7b
+      /bin/ollama pull nomic-embed-text
+      wait
+      "
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
       interval: 30s

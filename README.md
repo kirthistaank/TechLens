@@ -98,6 +98,27 @@ make pipeline
 # or: PYTHONPATH=src uv run python -c "from techlens.scheduling.scheduler import run_pipeline; run_pipeline()"
 ```
 
+---
+
+## Deployment
+
+**Want to deploy TechLens to the cloud?** See [`docs/oracle-cloud-setup.md`](docs/oracle-cloud-setup.md) for a complete guide to deploying on Oracle Cloud Always Free tier (VM.Standard.A1.Flex, 2 OCPU, 12GB RAM, free forever).
+
+Includes:
+- Instance setup & SSH configuration
+- Docker + Ollama deployment
+- TechLens backend in Docker
+- Comprehensive troubleshooting (storage, SSH, health checks, Docker build issues)
+- SSH tunnel access from your Mac
+- Model selection (mistral:7b vs qwen3:14b)
+
+**Quick start (after instance setup):**
+```bash
+docker compose up -d
+docker compose exec ollama ollama pull mistral:7b
+# Frontend available at http://<public-ip>:8000
+```
+
 The pipeline also runs automatically every day at 06:00 (configurable in `.env`).
 
 ---

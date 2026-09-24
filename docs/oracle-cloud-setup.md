@@ -702,9 +702,402 @@ cd ~/techlens && docker compose build --no-cache techlens
 docker compose restart techlens
 ```
 
+### Issue: SSH connection timeout (`Operation timed out`)
+
+**Error:**
+```
+ssh: connect to host 129.146.58.128 port 22: Operation timed out
+```
+
+**Root cause:** Instance is not reachable (stopped, no public IP, or network issue).
+
+**Solution — Step 1: Check instance status**
+
+Go to Oracle Cloud Console:
+1. **Compute > Instances**
+2. Click your instance
+3. Verify **Instance State** = "Running"
+4. Copy current **Public IPv4 Address** (may have changed if Ephemeral)
+
+**Solution — Step 2: Try SSH with verbose output**
+
+```bash
+# See what's happening
+ssh -v -i ~/.ssh/your-private-key.key opc@<public-ip>
+
+# Look for:
+# - "Connecting to..."
+# - "Connected"
+# - Any error messages
+```
+
+**Solution — Step 3: If instance is stopped, restart it**
+
+```bash
+# In Oracle Cloud Console:
+# Click instance → More Actions → Start
+
+# Then try SSH again (wait 30 seconds for boot)
+ssh -i ~/.ssh/your-private-key.key opc@<public-ip>
+```
+
+**Solution — Step 4: If IP changed (Ephemeral)**
+
+Ephemeral IPs change when instance stops/starts:
+
+```bash
+# Get new IP from Oracle Console
+# Then SSH to the new IP
+ssh -i ~/.ssh/your-private-key.key opc@<new-public-ip>
+```
+
+To keep the same IP, use a **Reserved Public IP** (costs money, not recommended for portfolio).
+
+### Issue: SSH tunnel connection slow or hanging
+
+**Error:**
+```
+ssh -L 8000:localhost:8000 opc@129.146.58.128
+# Hangs or takes 30+ seconds
+```
+
+**Solution:**
+
+```bash
+# Add verbose output to see what's happening
+ssh -v -L 8000:localhost:8000 opc@<public-ip>
+
+# With timeout (30 seconds)
+timeout 30 ssh -L 8000:localhost:8000 opc@<public-ip>
+
+# Once connected, test the tunnel
+curl http://localhost:8000/api/digest/daily
+```
+
+SSH tunnels can be slow on high-latency connections. If it eventually connects (after 30-60 seconds), it's working fine.
+
+### Issue: SSH tunnel syntax error
+
+**Error:**
+```
+Bad local forwarding specification '8000'
+```
+
+**Solution:** Remove space in `-L` flag:
+
+```bash
+# ❌ Wrong (space after 8000)
+ssh -L 8000 :localhost:8000 opc@<public-ip>
+
+# ✅ Correct (no space)
+ssh -L 8000:localhost:8000 opc@<public-ip>
+```
+
+### Issue: HTTP 404 on `/health` endpoint
+
+**Error:**
+```
+curl http://localhost:8000/health
+{"detail":"Not Found"}
+```
+
+**Solution:** `/health` endpoint doesn't exist. Use valid endpoints:
+
+```bash
+# Get daily digest
+curl http://localhost:8000/api/digest/daily
+
+# View API docs
+curl http://localhost:8000/docs
+
+# Or add a /health endpoint to routes.py (optional)
+```
+
+### Issue: Ollama container unhealthy (health check fails)
+
+**Error:**
+```
+Container techlens-ollama Error dependency ollama failed to start
+container techlens-ollama is unhealthy
+```
+
+**Root cause:** Health check is too strict, or Ollama API takes time to respond.
+
+**Solution — Change health check dependency:**
+
+Edit `docker-compose.yml`:
+
+```yaml
+techlens:
+  depends_on:
+    ollama:
+      condition: service_started  # Changed from service_healthy
+```
+
+Then:
+```bash
+docker compose up -d
+docker compose ps  # Both should be running
+```
+
+**Or disable health check on Ollama entirely:**
+
+In `docker-compose.yml`, remove or comment out the `healthcheck:` block under `ollama:`.
+
+### Issue: Public IP not accessible (403 / Connection refused)
+
+**Error:**
+```
+curl http://129.146.58.128:8000
+curl: (7) Failed to connect to 129.146.58.128 port 8000: Connection refused
+```
+
+**Root cause:** Security Group doesn't allow inbound traffic on port 8000.
+
+**Solution:**
+
+1. Go to Oracle Cloud Console → **Compute > Instances**
+2. Click instance → **Primary VNIC**
+3. Click security group name
+4. **Ingress Rules** → **Add Ingress Rule**:
+   - Stateless: No
+   - Source CIDR: `0.0.0.0/0`
+   - IP Protocol: TCP
+   - Source Port Range: (leave blank)
+   - Destination Port Range: `8000`
+   - Click **Add**
+
+5. Wait 30 seconds, then test:
+```bash
+curl http://129.146.58.128:8000/api/digest/daily
+```
+
+**For SSH access (port 22), ensure it's also open:**
+- Port: `22`
+- Source CIDR: Your IP (e.g., `203.0.113.0/24`) — restrict for security
+
+### Issue: "No space left on device" when pulling models
+
+**Error:**
+```
+Error: write /root/.ollama/models/blobs/...: no space left on device
+```
+
+**Root cause:** Partial failed downloads consume space, or root filesystem is full.
+
+**Solution — Step 1: Check available space**
+
+```bash
+# See what's using space
+df -h
+# Look for 100% usage on /dev/mapper/ocivolume-root
+
+# Find large files/directories
+du -sh /* | sort -rh | head -10
+
+# Detailed breakdown
+du -sh /home /var /usr /opt
+```
+
+**Solution — Step 2: Delete partial Docker blobs**
+
+```bash
+# Stop Ollama to release file locks
+docker compose stop ollama
+
+# Delete incomplete/partial downloads
+sudo rm -rf /var/lib/docker/volumes/techlens_ollama-models/_data/blobs/*-partial
+
+# Delete any orphaned model directories
+sudo rm -rf /home/opc/techlens/models/
+
+# Clean Docker system
+docker system prune -a --volumes -f
+docker volume prune -f
+```
+
+**Solution — Step 3: Clean package manager cache**
+
+```bash
+# Clean DNF (package manager) cache
+sudo dnf clean all
+sudo dnf autoremove -y
+
+# Clean package database
+sudo rm -rf /var/cache/dnf/*
+```
+
+**Solution — Step 4: Clean unnecessary project files**
+
+```bash
+cd ~/techlens
+
+# Remove node_modules (usually 300-500MB)
+rm -rf frontend/node_modules
+
+# Remove Python cache
+find . -type d -name __pycache__ -exec rm -rf {} +
+find . -type d -name .pytest_cache -exec rm -rf {} +
+rm -rf .venv .pytest_cache
+```
+
+**Solution — Step 5: Clean system logs**
+
+```bash
+# Clean old journal logs (keep last 100MB)
+sudo journalctl --vacuum=100M
+
+# Clean old log files
+sudo rm -rf /var/log/*.gz /var/log/*.1
+sudo rm -rf /var/log/audit/*
+```
+
+**Solution — Step 6: Remove Docker volume completely and recreate**
+
+```bash
+# Remove the volume that has partial data
+docker volume rm techlens_ollama-models
+
+# Verify it's gone
+docker volume ls | grep ollama-models
+
+# Space should be freed now
+df -h
+```
+
+**Solution — Step 7: Retry model pull**
+
+```bash
+# Start Ollama fresh
+docker compose up -d ollama
+sleep 30
+
+# Pull smaller model (mistral:7b is ~4.7GB, not 9GB)
+docker compose exec ollama ollama pull mistral:7b
+
+# Watch progress
+docker compose logs -f ollama
+```
+
+**Prevention — Use smaller models**
+
+| Model | Size | Use Case |
+|---|---|---|
+| mistral:7b | 4.7 GB | ✅ Recommended for portfolio |
+| llama2:7b | 4 GB | Good alternative |
+| qwen3:7b | ~4 GB | If available |
+| ❌ qwen3:14b | 9 GB | Too large for 30GB root |
+
+**Prevention — Keep space headroom**
+
+```bash
+# Before pulling model, ensure 10GB+ free
+df -h
+# If less than 10GB free, do cleanup first
+
+# Monitor space regularly
+watch -n 5 'df -h | grep ocivolume'
+```
+
+**Prevention — Use Always Free tier efficiently**
+
+- **Don't** add extra block volumes (costs money)
+- **Keep** only essential Docker images
+- **Delete** node_modules after frontend build (rebuild when needed)
+- **Use** smaller models (7B instead of 14B)
+- **Prune** Docker regularly: `docker system prune -a --volumes -f`
+
+**Quick cleanup script** (run anytime):
+
+```bash
+#!/bin/bash
+# Save as ~/cleanup.sh
+
+echo "Cleaning TechLens storage..."
+
+# Stop services
+docker compose stop ollama techlens
+
+# Remove partial blobs
+sudo rm -rf /var/lib/docker/volumes/techlens_ollama-models/_data/blobs/*-partial
+sudo rm -rf /home/opc/techlens/models/
+
+# Clean Docker
+docker system prune -a --volumes -f
+docker builder prune -a -f
+
+# Clean system
+sudo dnf clean all
+sudo journalctl --vacuum=100M
+
+# Report
+echo "Cleanup complete!"
+df -h | grep ocivolume-root
+```
+
+Run it:
+```bash
+bash ~/cleanup.sh
+```
+
 ---
 
-## Part 11: Accessing from Your Mac
+## Part 11: Accessing Frontend from Your Mac
+
+### 11.1 Direct Access (via Public IP)
+
+If Security Groups allow public access:
+
+```bash
+# Open in your Mac browser:
+http://<public-ip>:8000
+
+# Example:
+http://129.146.58.128:8000
+```
+
+**To enable public access:**
+1. Go to Oracle Cloud Console → **Compute > Instances**
+2. Click your instance
+3. **Primary VNIC** → Security group
+4. **Ingress Rules** → Add:
+   - Source CIDR: `0.0.0.0/0`
+   - Protocol: TCP
+   - Port: 8000
+
+### 11.2 SSH Tunnel (Recommended for Security)
+
+**On your Mac, create a tunnel** (keep this terminal open):
+
+```bash
+ssh -i ~/.ssh/your-private-key.key -L 8000:localhost:8000 opc@<public-ip>
+```
+
+Example:
+```bash
+ssh -i ~/.ssh/ssh-key-2026-09-23-oracle-techlens.key -L 8000:localhost:8000 opc@129.146.58.128
+```
+
+**Then in your browser:**
+```
+http://localhost:8000
+```
+
+This tunnels port 8000 through SSH (encrypted, secure).
+
+### 11.3 Access API Documentation
+
+```
+http://<public-ip>:8000/docs
+# or via tunnel:
+http://localhost:8000/docs
+```
+
+Interactive Swagger UI with all endpoints.
+
+---
+
+## Part 12: Accessing from Your Mac
 
 ### Option A: SSH Tunnel (Recommended)
 
@@ -754,7 +1147,21 @@ http://<public-ip>:8000/docs
 
 ---
 
-## Part 13: Docker Compose vs Manual Docker
+## Part 13: Common Issues Summary
+
+| Issue | Solution |
+|---|---|
+| SSH timeout | Check instance is running, restart if needed |
+| SSH tunnel slow | Normal, can take 30-60s on high-latency links |
+| Public IP not accessible | Add port 8000 to Security Group ingress rules |
+| `/health` endpoint 404 | Use `/api/digest/daily` or add `/health` endpoint |
+| Ollama container unhealthy | Change `depends_on` condition to `service_started` |
+| No space left on device | Run cleanup script: `docker system prune -a --volumes -f` |
+| Docker build fails | Check frontend/dist exists, run `npm run build` first |
+
+---
+
+## Part 14: Docker Compose vs Manual Docker
 
 ### Why docker-compose.yml?
 
@@ -786,7 +1193,23 @@ docker compose restart
 
 ---
 
-## Part 14: Reference Commands
+## Part 15: Deployment Checklist
+
+Before going to production, verify:
+
+- [ ] Instance is running and has public IP
+- [ ] SSH access works: `ssh -i ~/.ssh/key opc@<public-ip>`
+- [ ] Docker Compose is running: `docker compose ps` (both containers up)
+- [ ] Ollama model is pulled: `docker compose exec ollama ollama list`
+- [ ] Backend responds: `curl http://localhost:8000/api/digest/daily`
+- [ ] Frontend accessible: `http://<public-ip>:8000` or SSH tunnel
+- [ ] Security Groups allow port 8000 (if public) and 22 (SSH)
+- [ ] Disk space is adequate: `df -h` (at least 10GB free)
+- [ ] Model is appropriate size (mistral:7b ~4.7GB, not qwen3:14b ~9GB)
+
+---
+
+## Part 16: Reference Commands
 
 ### Docker Compose Commands
 
