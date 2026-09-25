@@ -24,10 +24,10 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./techlens.db"
 
     # ChromaDB — local vector store for embeddings and semantic search (Phase 2)
-    chroma_path: str = "./data.nosync/chroma"
+    chroma_path: str = "./data/chroma"
 
     # Kuzu — embedded graph database for knowledge graph (Phase 3)
-    kuzu_path: str = "./data.nosync/kuzu_graph"
+    kuzu_path: str = "./data/kuzu_graph"
 
     # Semantic dedup — cosine distance below this threshold = near-duplicate (0.08 ≈ similarity 0.92)
     semantic_dedup_threshold: float = 0.08
