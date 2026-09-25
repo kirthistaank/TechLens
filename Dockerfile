@@ -1,19 +1,20 @@
-# TechLens backend Docker image
-FROM python:3.11-slim
+# TechLens backend Docker image — Python 3.11 slim
+FROM python:3.11.16-slim
 
 WORKDIR /app
 
-# Install uv for fast dependency resolution
-RUN pip install --no-cache-dir uv
+# Install uv for fast, deterministic dependency resolution
+RUN pip install --no-cache-dir uv>=0.1.0
 
-# Copy project files
-COPY pyproject.toml pyproject.toml
+# Copy dependency files first (cached layer if no changes)
+COPY pyproject.toml .
+# uv.lock pinned all versions; next build reuses cache
+RUN uv sync --frozen
+
+# Copy application source (invalidates above cache only if src/ changes)
 COPY src/ src/
 COPY config/ config/
 COPY frontend/dist/ frontend/dist/
-
-# Install dependencies using uv
-RUN uv sync
 
 # Create directories for persistent storage
 RUN mkdir -p /data/db /data/chroma && \
@@ -22,7 +23,8 @@ RUN mkdir -p /data/db /data/chroma && \
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PATH="/app/.venv/bin:$PATH"
+    PATH="/app/.venv/bin:$PATH" \
+    UV_CACHE_DIR="/tmp/.uv-cache"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
