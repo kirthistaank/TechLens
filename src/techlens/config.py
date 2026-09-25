@@ -13,7 +13,7 @@ class Settings(BaseSettings):
 
     # Ollama
     ollama_base_url: str = "http://localhost:11434"
-    ollama_model: str = "qwen3:14b" #"qwen3:32b" to heavy for oracle cloud Oracle Cloud Always Free — ARM Ampere A1 Cores
+    ollama_model: str = "mistral:7b" #"qwen3:14b" #"qwen3:32b" to heavy for oracle cloud Oracle Cloud Always Free — ARM Ampere A1 Cores
     ollama_embed_model: str = "nomic-embed-text"
     ollama_num_ctx: int = 8192
     ollama_temperature: float = 0.1
