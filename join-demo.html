@@ -144,8 +144,8 @@
             showStatus('loading', 'Processing your request...');
 
             try {
-                // Call TechLens backend on Oracle Cloud
-                const response = await fetch('http://129.146.58.128:8000/api/join-demo', {
+                // Call TechLens backend (protocol-relative URL allows HTTPS from GitHub Pages)
+                const response = await fetch('//129.146.58.128:8000/api/join-demo', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
