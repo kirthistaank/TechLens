@@ -6,15 +6,14 @@ WORKDIR /app
 # Install uv for fast, deterministic dependency resolution
 RUN pip install --no-cache-dir uv>=0.1.0
 
-# Copy dependency files first (cached layer if no changes)
+# Copy all source first (required for uv sync to resolve pyproject.toml)
 COPY pyproject.toml .
-# uv.lock pinned all versions; next build reuses cache
-RUN uv sync --frozen
-
-# Copy application source (invalidates above cache only if src/ changes)
 COPY src/ src/
 COPY config/ config/
 COPY frontend/dist/ frontend/dist/
+
+# Install dependencies using uv
+RUN uv sync
 
 # Create directories for persistent storage
 RUN mkdir -p /data/db /data/chroma && \
