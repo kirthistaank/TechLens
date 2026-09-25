@@ -12,6 +12,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
 
+from sqlalchemy.exc import IntegrityError
+
 import yaml
 from sqlalchemy.orm import Session
 
@@ -88,9 +90,16 @@ def build_daily_digest(session: Session) -> dict:
         date=today,
         content=json.dumps(digest_content),
     )
-    session.add(digest)
-    session.commit()
-    logger.info("Daily digest built with %d items", len(items))
+    try:
+        session.add(digest)
+        session.commit()
+        logger.info("Daily digest built with %d items", len(items))
+    except IntegrityError:
+        # Another request committed first — roll back and return what's already stored
+        session.rollback()
+        existing = session.query(Digest).filter_by(date=today, digest_type="daily").first()
+        if existing:
+            return json.loads(existing.content)
     return digest_content
 
 

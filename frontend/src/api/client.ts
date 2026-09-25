@@ -9,8 +9,13 @@ import type { Article, ConceptStat, Digest, KnowledgeMapOut, PipelineStatus, Sou
 
 const BASE = "/api";
 
+export class RateLimitError extends Error {
+  constructor() { super("Rate limited — too many requests"); }
+}
+
 /** Throw a descriptive error if the response is not OK. */
 async function handleResponse<T>(res: Response): Promise<T> {
+  if (res.status === 429) throw new RateLimitError();
   if (!res.ok) {
     const text = await res.text().catch(() => res.statusText);
     throw new Error(`API ${res.status}: ${text}`);

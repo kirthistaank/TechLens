@@ -48,11 +48,31 @@ def _ensure_column(table: str, column: str, col_def: str) -> None:
         pass
 
 
+def _ensure_unique_index(index_name: str, table: str, columns: str) -> None:
+    """
+    Create a unique index if it does not already exist.
+    Also removes duplicate rows keeping the lowest id before creating the index.
+
+    Args:
+        index_name: Name for the index (e.g. "uq_digest_date_type").
+        table:      Table name.
+        columns:    Comma-separated column names (e.g. "date, digest_type").
+    """
+    try:
+        with engine.connect() as conn:
+            # Remove duplicates — keep the row with the smallest id
+            conn.execute(text(f"DELETE FROM {table} WHERE id NOT IN (SELECT MIN(id) FROM {table} GROUP BY {columns})"))
+            conn.execute(text(f"CREATE UNIQUE INDEX IF NOT EXISTS {index_name} ON {table}({columns})"))
+            conn.commit()
+    except Exception as exc:
+        logger.warning("Could not create unique index %s: %s", index_name, exc)
+
+
 def init_db() -> None:
     """Create all tables and apply any pending column migrations for existing DBs."""
     Base.metadata.create_all(bind=engine)
-    # Migration-safe: add concepts_extracted to articles table if missing
     _ensure_column("articles", "concepts_extracted", "BOOLEAN NOT NULL DEFAULT 0")
+    _ensure_unique_index("uq_digest_date_type", "digests", "date, digest_type")
     logger.info("Database initialized")
 
 

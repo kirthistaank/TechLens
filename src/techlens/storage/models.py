@@ -130,6 +130,7 @@ class Article(Base):
 
 class Digest(Base):
     __tablename__ = "digests"
+    __table_args__ = (UniqueConstraint("date", "digest_type", name="uq_digest_date_type"),)
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     digest_type: Mapped[str] = mapped_column(String, default="daily")

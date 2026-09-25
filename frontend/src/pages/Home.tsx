@@ -5,7 +5,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { fetchDailyDigest } from "../api/client";
+import { fetchDailyDigest, RateLimitError } from "../api/client";
 import type { Digest, DigestItem } from "../types";
 
 const REC_STYLE: Record<string, { badge: string; border: string }> = {
@@ -91,11 +91,13 @@ interface Props {
 export default function Home({ archivedIds, onArchive }: Props) {
   const [digest, setDigest] = useState<Digest | null>(null);
   const [loading, setLoading] = useState(true);
+  const [rateLimited, setRateLimited] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const load = () => {
     fetchDailyDigest()
       .then((d) => {
+        setRateLimited(false);
         setDigest(d);
         // Stop polling once digest has items — pipeline is done
         if (d.items.length > 0 && intervalRef.current !== null) {
@@ -103,7 +105,13 @@ export default function Home({ archivedIds, onArchive }: Props) {
           intervalRef.current = null;
         }
       })
-      .catch(() => setDigest(null))
+      .catch((err) => {
+        if (err instanceof RateLimitError) {
+          setRateLimited(true);
+        } else {
+          setDigest(null);
+        }
+      })
       .finally(() => setLoading(false));
   };
 
@@ -120,6 +128,16 @@ export default function Home({ archivedIds, onArchive }: Props) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-400">
         Loading…
+      </div>
+    );
+  }
+
+  if (rateLimited) {
+    return (
+      <div className="flex items-center justify-center h-64 text-center px-4">
+        <div>
+          <p className="text-gray-500 font-medium">Too many requests — please wait a moment and refresh.</p>
+        </div>
       </div>
     );
   }
