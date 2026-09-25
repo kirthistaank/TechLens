@@ -21,20 +21,14 @@ chmod +x /home/opc/techlens/manage-ngrok.sh
 sudo cp /home/opc/techlens/ngrok-monitor.service /etc/systemd/system/
 ```
 
-### 3. Create log directory
-```bash
-sudo mkdir -p /var/log/techlens
-sudo chown opc:opc /var/log/techlens
-```
-
-### 4. Enable and start service
+### 3. Enable and start service
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable ngrok-monitor
 sudo systemctl start ngrok-monitor
 ```
 
-### 5. Verify it's running
+### 4. Verify it's running
 ```bash
 sudo systemctl status ngrok-monitor
 journalctl -u ngrok-monitor -f  # Watch live logs
@@ -62,6 +56,13 @@ The form will:
 2. Submit to `/api/join-demo` 
 3. Get redirect token
 4. Open the app
+
+## Logs
+
+Monitor logs are written to `/home/opc/techlens/ngrok-monitor.log`:
+```bash
+tail -f /home/opc/techlens/ngrok-monitor.log
+```
 
 ## Cleanup
 

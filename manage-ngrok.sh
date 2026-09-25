@@ -4,7 +4,7 @@
 
 NGROK_API="http://localhost:4040/api/tunnels"
 URL_FILE="/home/opc/techlens/current_ngrok_url.txt"
-LOG_FILE="/var/log/techlens/ngrok-monitor.log"
+LOG_FILE="/home/opc/techlens/ngrok-monitor.log"
 
 mkdir -p "$(dirname "$LOG_FILE")"
 
