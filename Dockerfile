@@ -3,7 +3,13 @@ FROM python:3.11.16-slim
 
 WORKDIR /app
 
-# Install uv for fast, deterministic dependency resolution
+# Install system tools and uv
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    sqlite3 \
+    vim \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN pip install --no-cache-dir uv>=0.1.0
 
 # Copy all source first (required for uv sync to resolve pyproject.toml)
