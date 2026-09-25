@@ -53,6 +53,12 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
         content={"detail": "Too many requests. Please try again later."}
     )
 
+@app.middleware("http")
+async def add_ngrok_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["ngrok-skip-browser-warning"] = "true"
+    return response
+
 allow_origins = [
     "http://localhost:5173",              # Vite dev server (local development)
     "http://localhost:3000",              # Alternative dev server (local development)
