@@ -16,12 +16,18 @@
             justify-content: center;
             padding: 24px;
         }
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 820px;
+        }
         .card {
             background: white;
             border: 1px solid #e5e7eb;
             border-radius: 16px;
             width: 100%;
-            max-width: 820px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             overflow: hidden;
@@ -143,9 +149,89 @@
             .left { border-right: none; border-bottom: 1px solid #e5e7eb; padding: 36px 28px; }
             .right { padding: 36px 28px; }
         }
+        .notice {
+            width: 100%;
+            margin-top: 10px;
+            padding: 6px 0;
+            font-size: 0.85em;
+            line-height: 1.5;
+            text-align: center;
+            color: #111827;
+        }
+        .help-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 0.85em;
+            color: #111827;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            cursor: pointer;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .help-btn:hover { background: #f3f4f6; color: #111827; border-radius: 3px; }
+        /* Modal */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .modal-backdrop.open { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 12px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-header h3 {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #111827;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 1.2em;
+            line-height: 1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            width: auto;
+            margin-top: 0;
+        }
+        .modal-close:hover { background: #f3f4f6; color: #111827; }
+        .modal-body { padding: 20px; }
+        .modal-body p {
+            font-size: 0.88em;
+            color: #4b5563;
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+        .modal-body img {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
     </style>
 </head>
 <body>
+    <div class="wrapper">
     <div class="card">
         <div class="left">
             <div class="logo">TechLens</div>
@@ -174,6 +260,29 @@
             <div class="status" id="status"></div>
         </div>
     </div>
+
+    <!-- Notice below the card -->
+    <div class="notice">
+        Your browser may show a security warning — click <strong>"Visit Site"</strong> to continue safely.
+        <button class="help-btn" id="helpBtn">See how</button>
+    </div>
+
+    </div><!-- end .wrapper -->
+
+    <!-- Modal: warning screenshot preview -->
+    <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>What the browser warning looks like</h3>
+                <button class="modal-close" id="modalClose">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>When you click <strong>View Demo</strong>, your browser may show this ngrok interstitial page. It is not a real security threat — simply click <strong>"Visit Site"</strong> to proceed to the TechLens demo.</p>
+                <img src="images/redirection-warning.jpg" alt="Browser ngrok warning screenshot showing the Visit Site button">
+            </div>
+        </div>
+    </div>
+
     <script>
         // Auto-updated by manage-ngrok.sh on the Oracle instance when ngrok URL changes
         const BACKEND_URL = 'https://unwired-gear-glowing.ngrok-free.dev';
@@ -196,6 +305,11 @@
             }
         });
         function showStatus(type, msg) { statusDiv.className = `status ${type}`; statusDiv.textContent = msg; }
+
+        const backdrop = document.getElementById('modalBackdrop');
+        document.getElementById('helpBtn').addEventListener('click', () => backdrop.classList.add('open'));
+        document.getElementById('modalClose').addEventListener('click', () => backdrop.classList.remove('open'));
+        backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.classList.remove('open'); });
     </script>
 </body>
 </html>
