@@ -29,7 +29,7 @@ TechLens app validates token → grants access
 | `src/techlens/api/routes.py` | **Add** `/api/join-demo` endpoint | Handle user signup |
 | `src/techlens/api/main.py` | **Add** rate limiting | Protect from DDoS |
 | `src/techlens/config.py` | **Add** token secret | Generate access tokens |
-| `frontend/public/join-demo.html` | **Create** GitHub landing page | User signup UI |
+| `frontend/public/index.html` | **Create** GitHub landing page | User signup UI |
 | `frontend/src/App.tsx` | **Modify** | Token validation on load |
 | `docker-compose.yml` | **Modify** | Update if needed |
 
@@ -234,7 +234,7 @@ class Settings(BaseSettings):
 
 ## Step 5: Create GitHub Landing Page
 
-**File:** `frontend/public/join-demo.html`
+**File:** `frontend/public/index.html`
 
 **Create this file:**
 ```html
@@ -444,7 +444,7 @@ function App() {
         
         if (!token) {
             // No token, redirect to landing page
-            window.location.href = '/join-demo.html';
+            window.location.href = '/index.html';
             return;
         }
         
@@ -457,12 +457,12 @@ function App() {
                     window.history.replaceState({}, document.title, window.location.pathname);
                 } else {
                     alert('Invalid or expired token. Please join the demo again.');
-                    window.location.href = '/join-demo.html';
+                    window.location.href = '/index.html';
                 }
             })
             .catch(err => {
                 console.error('Token validation failed:', err);
-                window.location.href = '/join-demo.html';
+                window.location.href = '/index.html';
             })
             .finally(() => setLoading(false));
     }, []);
@@ -514,7 +514,7 @@ docker compose up -d
 ```
 
 ### Test the flow:
-1. Visit `https://your-github-pages-url/join-demo.html` (static, always available)
+1. Visit `https://your-github-pages-url/index.html` (static, always available)
 2. Enter name and email
 3. Click "Join Demo"
 4. Should redirect to: `https://random.ngrok.io/?token=xyz`
@@ -558,7 +558,7 @@ SELECT * FROM user_joined WHERE accessed_at IS NOT NULL;  -- Who accessed?
 - [ ] Add /api/join-demo endpoint
 - [ ] Add /api/validate-token endpoint
 - [ ] Update config.py
-- [ ] Create join-demo.html
+- [ ] Create index.html
 - [ ] Update App.tsx with token validation
 - [ ] Add slowapi to pyproject.toml
 - [ ] Rebuild Docker

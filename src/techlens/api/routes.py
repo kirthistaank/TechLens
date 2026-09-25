@@ -51,7 +51,7 @@ router = APIRouter(prefix="/api")
 # --- Digest ---
 
 @router.get("/digest/daily", response_model=DigestOut)
-@limiter.limit("30/minute")
+@limiter.limit("5/day;1/hour")
 def get_daily_digest(request: Request, session: Session = Depends(get_db)):
     """
     Return today's digest. If no digest record exists yet but summarized articles
@@ -118,7 +118,7 @@ def get_config():
 
 
 @router.post("/join-demo", response_model=JoinDemoResponse)
-def join_demo(body: JoinDemoRequest, session: Session = Depends(get_db)):
+def join_demo(request: Request, body: JoinDemoRequest, session: Session = Depends(get_db)):
     """
     User signup endpoint. Generates temporary access token for demo.
     """
