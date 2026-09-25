@@ -43,10 +43,27 @@ while true; do
         continue
     fi
 
-    # If URL changed, update the file
+    # If URL changed, update the file and join-demo.html
     if [ "$CURRENT_URL" != "$LAST_URL" ]; then
         echo "$CURRENT_URL" > "$URL_FILE"
         log "Updated ngrok URL: $CURRENT_URL"
+
+        # Check what URL is currently in git (avoid unnecessary commits)
+        cd /home/opc/techlens
+        GIT_URL=$(git show HEAD:join-demo.html | grep -oP "const BACKEND_URL = '\K[^']+")
+
+        if [ "$CURRENT_URL" != "$GIT_URL" ]; then
+            # Update join-demo.html with new URL
+            sed -i "s|const BACKEND_URL = '[^']*'|const BACKEND_URL = '$CURRENT_URL'|" join-demo.html
+            log "Updated join-demo.html: $GIT_URL → $CURRENT_URL"
+
+            git add join-demo.html
+            git commit -m "Update ngrok tunnel URL"
+            git push origin main && log "Pushed to GitHub" || log "Git push failed — check SSH key"
+        else
+            log "URL matches git, no push needed"
+        fi
+
         LAST_URL="$CURRENT_URL"
     fi
 
