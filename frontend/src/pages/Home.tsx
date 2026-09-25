@@ -4,7 +4,7 @@
  * Receives archivedIds from App so archiving here also hides articles on the Articles page.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchDailyDigest } from "../api/client";
 import type { Digest, DigestItem } from "../types";
 
@@ -91,19 +91,29 @@ interface Props {
 export default function Home({ archivedIds, onArchive }: Props) {
   const [digest, setDigest] = useState<Digest | null>(null);
   const [loading, setLoading] = useState(true);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  /** Fetch the digest and auto-refresh every 30s while pipeline may be running. */
   const load = () => {
     fetchDailyDigest()
-      .then(setDigest)
+      .then((d) => {
+        setDigest(d);
+        // Stop polling once digest has items — pipeline is done
+        if (d.items.length > 0 && intervalRef.current !== null) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+      })
       .catch(() => setDigest(null))
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
     load();
-    const id = setInterval(load, 30_000);
-    return () => clearInterval(id);
+    // Only start polling interval for the pipeline-running empty state
+    intervalRef.current = setInterval(load, 30_000);
+    return () => {
+      if (intervalRef.current !== null) clearInterval(intervalRef.current);
+    };
   }, []);
 
   if (loading) {
