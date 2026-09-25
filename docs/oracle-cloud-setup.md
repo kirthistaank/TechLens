@@ -1362,12 +1362,112 @@ docker compose up -d
 
 # 5. Verify
 docker compose ps
-curl http://localhost:8000/health
+curl http://localhost:8000/api/digest/daily
 ```
 
 ---
 
-**Last updated:** 2026-09-23  
-**Status:** Production-ready for single-user local-first AI tech intelligence  
-**Verified on:** Oracle Cloud VM.Standard.A1.Flex · Oracle Linux 9 · Docker Compose v5.5.1
+## Version 2.0: Secure Demo Access (GitHub Pages + Rate Limiting)
+
+### Features Added
+
+**1. Rate Limiting**
+- `/api/digest/daily`: 30 requests/minute
+- `/api/join-demo`: 5 requests/minute (configured in code)
+- Uses `slowapi` library for DDoS protection
+
+**2. Demo User Access Flow**
+```
+GitHub Pages Landing Page (Static)
+  ↓ https://kirthistaank.github.io/TechLens/join-demo.html
+User signs up (name + email)
+  ↓ POST to /api/join-demo
+Backend generates 24-hour access token
+  ↓ Returns token + ngrok URL (if configured)
+Auto-redirect to TechLens app
+  ↓ Token validation on load
+Access granted or redirect to signup page
+```
+
+**3. Database Tracking**
+- New `user_joined` SQLite table tracks all signups
+- Columns: id, name, email, access_token, token_expires_at, joined_at, accessed_at
+- Query signups: `sqlite3 /data/db/techlens.db "SELECT name, email, accessed_at FROM user_joined;"`
+
+**4. GitHub Pages Setup**
+- Landing page served from: `https://kirthistaank.github.io/TechLens/join-demo.html`
+- GitHub Pages automatically enabled in repo Settings → Pages
+- Static hosting (no dependency on backend for landing page)
+- CORS configured to allow GitHub Pages origin
+
+### Testing Demo Access
+
+**Test signup via API:**
+```bash
+curl -X POST http://129.146.58.128:8000/api/join-demo \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test User","email":"test@example.com"}'
+
+# Response:
+# {
+#   "access_token": "kM0N9R0yCB_a3llaACLQiTc1xfBIxfZCd5kuKHlVxAM",
+#   "ngrok_url": "http://localhost:8000",
+#   "expires_in_hours": 24,
+#   "message": "Welcome Test User! Your demo access is ready."
+# }
+```
+
+**Test token validation:**
+```bash
+curl "http://129.146.58.128:8000/api/validate-token?token=kM0N9R0yCB_a3llaACLQiTc1xfBIxfZCd5kuKHlVxAM"
+
+# Response:
+# {
+#   "valid": true,
+#   "name": "Test User",
+#   "email": "test@example.com",
+#   "expires_at": "2026-09-26T00:03:33.561769"
+# }
+```
+
+**Test rate limiting (30/min on digest):**
+```bash
+for i in {1..31}; do curl -s http://129.146.58.128:8000/api/digest/daily > /dev/null; done
+# 31st request returns: {"detail": "Too many requests. Please try again later."}
+```
+
+### Auto-Recovery Configuration
+
+Containers are configured with `restart: unless-stopped` policy:
+- ✅ Auto-restarts on container crash
+- ✅ Auto-restarts on Docker daemon restart
+- ✅ Persists across infrastructure restarts
+
+Verify Docker auto-starts on VM boot:
+```bash
+sudo systemctl is-enabled docker
+# Output: enabled
+```
+
+If not enabled:
+```bash
+sudo systemctl enable docker
+```
+
+### CORS Configuration
+
+Backend accepts requests from:
+- `http://localhost:5173` - Local Vite dev
+- `http://localhost:3000` - Alternative local dev
+- `http://localhost:8001` - Local testing (Python http.server)
+- `http://129.146.58.128:8000` - Oracle backend (self-requests)
+- `https://kirthistaank.github.io` - GitHub Pages landing page
+
+Update in `src/techlens/api/main.py` if adding new origins.
+
+---
+
+**Last updated:** 2026-09-24  
+**Status:** Production-ready with secure demo access & rate limiting  
+**Verified on:** Oracle Cloud VM.Standard.A1.Flex · Oracle Linux 9 · Docker Compose v5.5.1 · Python 3.11.16
 
