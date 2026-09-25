@@ -1,10 +1,10 @@
 #!/bin/bash
 # Monitor ngrok and update current URL file. Run as systemd service.
-# Queries ngrok's local API every 5 seconds to detect URL changes.
+# Parses ngrok's output to detect URL changes.
 
-NGROK_API="http://localhost:4040/api/tunnels"
 URL_FILE="/home/opc/techlens/current_ngrok_url.txt"
 LOG_FILE="/home/opc/techlens/ngrok-monitor.log"
+NGROK_LOG="/tmp/ngrok.log"
 
 mkdir -p "$(dirname "$LOG_FILE")"
 
@@ -21,10 +21,23 @@ fi
 LAST_URL=$(cat "$URL_FILE")
 
 while true; do
-    # Query ngrok API for current public URL
-    CURRENT_URL=$(curl -s "$NGROK_API" 2>/dev/null | grep -oP '"public_url":"\K[^"]+' | head -1)
+    # Extract ngrok public URL from ngrok's output log
+    # Look for "Forwarding" line with https URL
+    if [ -f "$NGROK_LOG" ]; then
+        CURRENT_URL=$(grep "Forwarding" "$NGROK_LOG" | grep -oP 'https://[^/\s]+' | head -1)
+    else
+        CURRENT_URL=""
+    fi
 
-    # If curl fails or ngrok not responding, wait and retry
+    # Fallback: try to get from ngrok API (port 4040 or 4041)
+    if [ -z "$CURRENT_URL" ]; then
+        CURRENT_URL=$(timeout 2 curl -s http://127.0.0.1:4040/api/tunnels 2>/dev/null | grep -oP '"public_url":"\K[^"]+' | head -1)
+    fi
+    if [ -z "$CURRENT_URL" ]; then
+        CURRENT_URL=$(timeout 2 curl -s http://127.0.0.1:4041/api/tunnels 2>/dev/null | grep -oP '"public_url":"\K[^"]+' | head -1)
+    fi
+
+    # If no URL found, wait and retry
     if [ -z "$CURRENT_URL" ]; then
         sleep 5
         continue

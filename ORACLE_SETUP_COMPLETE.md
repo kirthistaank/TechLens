@@ -107,16 +107,16 @@ Test the API:
 # Test health
 curl http://localhost:8000/api/digest/daily
 
-# Test config endpoint (should return ngrok URL)
+# Test config endpoint (will show localhost until monitor updates it)
 curl http://localhost:8000/api/config
 ```
 
-Should return something like:
+This might return localhost for now:
 ```json
 {"ngrok_url":"http://localhost:8000"}
 ```
 
-(It will show localhost until the monitor updates it)
+The monitor service (Step 7) will update this with the real ngrok URL
 
 ## Step 7: Setup ngrok Monitoring
 
