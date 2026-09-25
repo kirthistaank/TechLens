@@ -39,6 +39,7 @@ services:
         condition: service_started
     volumes:
       - techlens-data:/data
+      - /home/opc/techlens/current_ngrok_url.txt:/home/opc/techlens/current_ngrok_url.txt:ro
     environment:
       # LLM Configuration
       - OLLAMA_BASE_URL=http://ollama:11434
