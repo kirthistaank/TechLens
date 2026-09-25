@@ -51,7 +51,7 @@ router = APIRouter(prefix="/api")
 # --- Digest ---
 
 @router.get("/digest/daily", response_model=DigestOut)
-@limiter.limit("5/day;1/hour")
+@limiter.limit("30/day;5/hour")
 def get_daily_digest(request: Request, session: Session = Depends(get_db)):
     """
     Return today's digest. If no digest record exists yet but summarized articles
