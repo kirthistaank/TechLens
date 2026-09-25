@@ -56,10 +56,11 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",        # Vite dev server (local development)
-        "http://localhost:3000",        # Alternative dev server (local development)
-        "http://129.146.58.128:8000",   # TechLens backend (self-requests from redirect)
-        "https://github.com",           # GitHub Pages landing page domain
+        "http://localhost:5173",              # Vite dev server (local development)
+        "http://localhost:3000",              # Alternative dev server (local development)
+        "http://localhost:8001",              # Python http.server (local testing)
+        "http://129.146.58.128:8000",         # TechLens backend (self-requests)
+        "https://kirthistaank.github.io",     # GitHub Pages landing page
     ],
     allow_methods=["*"],
     allow_headers=["*"],
