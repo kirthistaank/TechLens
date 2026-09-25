@@ -134,8 +134,54 @@
         const statusDiv = document.getElementById('status');
         const submitBtn = document.getElementById('submitBtn');
 
+        let backendUrl = null;
+
+        // Try to discover backend URL from config endpoint
+        async function discoverBackendUrl() {
+            // Try common locations
+            const candidates = [
+                'http://localhost:8000',
+                'http://127.0.0.1:8000',
+            ];
+
+            // Add URL from query parameter if provided
+            const params = new URLSearchParams(window.location.search);
+            const backendParam = params.get('backend');
+            if (backendParam) {
+                candidates.unshift(backendParam);
+            }
+
+            for (const url of candidates) {
+                try {
+                    const response = await fetch(`${url}/api/config`, { timeout: 3000 });
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.ngrok_url;
+                    }
+                } catch (e) {
+                    continue;
+                }
+            }
+
+            return null;
+        }
+
+        // Initialize backend URL on page load
+        (async () => {
+            backendUrl = await discoverBackendUrl();
+            if (!backendUrl) {
+                showStatus('error', 'Unable to connect to TechLens backend. Please ensure the server is running.');
+                submitBtn.disabled = true;
+            }
+        })();
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            if (!backendUrl) {
+                showStatus('error', 'Backend URL not discovered. Please refresh the page.');
+                return;
+            }
 
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
@@ -144,8 +190,7 @@
             showStatus('loading', 'Processing your request...');
 
             try {
-                // Call TechLens backend (protocol-relative URL allows HTTPS from GitHub Pages)
-                const response = await fetch('https://unwired-gear-glowing.ngrok-free.dev/api/join-demo', {
+                const response = await fetch(`${backendUrl}/api/join-demo`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

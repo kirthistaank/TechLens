@@ -53,15 +53,19 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
         content={"detail": "Too many requests. Please try again later."}
     )
 
+allow_origins = [
+    "http://localhost:5173",              # Vite dev server (local development)
+    "http://localhost:3000",              # Alternative dev server (local development)
+    "http://localhost:8001",              # Python http.server (local testing)
+    "https://kirthistaank.github.io",     # GitHub Pages landing page
+]
+# Add backend URL if configured (for demo access and self-requests)
+if settings.ngrok_url:
+    allow_origins.append(settings.ngrok_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",              # Vite dev server (local development)
-        "http://localhost:3000",              # Alternative dev server (local development)
-        "http://localhost:8001",              # Python http.server (local testing)
-        "http://129.146.58.128:8000",         # TechLens backend (self-requests)
-        "https://kirthistaank.github.io",     # GitHub Pages landing page
-    ],
+    allow_origins=allow_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

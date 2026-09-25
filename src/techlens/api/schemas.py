@@ -170,3 +170,9 @@ class JoinDemoResponse(BaseModel):
     ngrok_url: str
     expires_in_hours: int
     message: str
+
+
+class ConfigOut(BaseModel):
+    """Public configuration for frontend discovery."""
+
+    ngrok_url: str

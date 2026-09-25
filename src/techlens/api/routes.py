@@ -19,6 +19,7 @@ from sqlalchemy.orm import Session
 from techlens.api.limiter import limiter
 from techlens.api.schemas import (
     ArticleOut,
+    ConfigOut,
     ConceptKnowledgeItem,
     ConceptOut,
     DigestOut,
@@ -108,6 +109,12 @@ def get_ngrok_url() -> str:
     if ngrok_url_file.exists():
         return ngrok_url_file.read_text().strip()
     return "http://localhost:8000"
+
+
+@router.get("/config", response_model=ConfigOut)
+def get_config():
+    """Public configuration endpoint for frontend discovery of backend URL."""
+    return ConfigOut(ngrok_url=get_ngrok_url())
 
 
 @router.post("/join-demo", response_model=JoinDemoResponse)

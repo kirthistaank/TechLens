@@ -1,0 +1,22 @@
+[Unit]
+Description=TechLens ngrok URL Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=opc
+WorkingDirectory=/home/opc/techlens
+ExecStart=/bin/bash /home/opc/techlens/manage-ngrok.sh
+Restart=always
+RestartSec=5
+
+# Give script time to connect to ngrok before restarting
+StartLimitInterval=60
+StartLimitBurst=10
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
