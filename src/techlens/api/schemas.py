@@ -7,7 +7,7 @@ Includes Phase 3 schemas: TrendOut, ConceptOut, SynthesisOut, and KnowledgeMapOu
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class ArticleOut(BaseModel):
@@ -154,3 +154,19 @@ class KnowledgeMapOut(BaseModel):
     tier1_gaps: list[str]
     total_seen: int
     total_read: int
+
+
+class JoinDemoRequest(BaseModel):
+    """Request schema for /api/join-demo endpoint."""
+
+    name: str
+    email: EmailStr
+
+
+class JoinDemoResponse(BaseModel):
+    """Response schema for /api/join-demo endpoint."""
+
+    access_token: str
+    ngrok_url: str
+    expires_in_hours: int
+    message: str

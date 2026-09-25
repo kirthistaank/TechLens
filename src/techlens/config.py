@@ -62,6 +62,11 @@ class Settings(BaseSettings):
     pipeline_schedule_hour: int = 6
     pipeline_schedule_minute: int = 0
 
+    # Demo access (Version 2.0)
+    demo_access_enabled: bool = True
+    token_expiry_hours: int = 24
+    ngrok_url: str = "http://localhost:8000"
+
     # Cloud LLM placeholder (not used by default)
     openai_api_key: str = ""
 

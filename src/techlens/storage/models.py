@@ -5,7 +5,8 @@ Enums for article status, recommendation, and source type are also defined here.
 """
 
 import json
-from datetime import datetime, timezone
+import uuid
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
@@ -205,3 +206,26 @@ class Synthesis(Base):
     article_ids: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
     generated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class UserJoined(Base):
+    """User signup record for demo access tracking."""
+
+    __tablename__ = "user_joined"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    email: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    access_token: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    token_expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    joined_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    accessed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    def is_token_valid(self) -> bool:
+        """Check if token is still valid (not expired)."""
+        now = datetime.now(timezone.utc)
+        # Ensure both datetimes are timezone-aware for comparison
+        expires = self.token_expires_at
+        if expires.tzinfo is None:
+            expires = expires.replace(tzinfo=timezone.utc)
+        return now < expires

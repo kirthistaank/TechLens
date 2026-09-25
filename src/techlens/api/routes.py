@@ -4,20 +4,26 @@ Covers digest retrieval, article listing/filtering, source management,
 manual pipeline triggering, pipeline status checks, semantic search (Phase 2),
 and Phase 3 knowledge-graph endpoints: /api/trends, /api/concepts,
 /api/synthesis (cross-source synthesis), and /api/knowledge/map.
+Includes rate limiting via slowapi for DDoS protection.
 """
 
 import json
 import logging
-from datetime import date, datetime, timezone
+import secrets
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
+from techlens.api.limiter import limiter
 from techlens.api.schemas import (
     ArticleOut,
     ConceptKnowledgeItem,
     ConceptOut,
     DigestOut,
+    JoinDemoRequest,
+    JoinDemoResponse,
     KnowledgeMapOut,
     PipelineStatus,
     RateRequest,
@@ -34,6 +40,7 @@ from techlens.storage.models import (
     Source,
     Synthesis,
     Trend,
+    UserJoined,
 )
 
 logger = logging.getLogger(__name__)
@@ -43,7 +50,8 @@ router = APIRouter(prefix="/api")
 # --- Digest ---
 
 @router.get("/digest/daily", response_model=DigestOut)
-def get_daily_digest(session: Session = Depends(get_db)):
+@limiter.limit("30/minute")
+def get_daily_digest(request: Request, session: Session = Depends(get_db)):
     """
     Return today's digest. If no digest record exists yet but summarized articles
     are available, build it on-demand so the UI never shows a hard 404.
@@ -89,6 +97,78 @@ def get_daily_digest(session: Session = Depends(get_db)):
         "total_collected": session.query(Article).count(),
         "total_scored": session.query(Article).filter(Article.score.isnot(None)).count(),
         "items": [],
+    }
+
+
+# --- Demo Access ---
+
+def get_ngrok_url() -> str:
+    """Get current ngrok URL from file."""
+    ngrok_url_file = Path("/home/opc/techlens/current_ngrok_url.txt")
+    if ngrok_url_file.exists():
+        return ngrok_url_file.read_text().strip()
+    return "http://localhost:8000"
+
+
+@router.post("/join-demo", response_model=JoinDemoResponse)
+def join_demo(body: JoinDemoRequest, session: Session = Depends(get_db)):
+    """
+    User signup endpoint. Generates temporary access token for demo.
+    """
+    # Check if user already exists with valid token
+    existing = session.query(UserJoined).filter_by(email=body.email).first()
+    if existing and existing.is_token_valid():
+        return JoinDemoResponse(
+            access_token=existing.access_token,
+            ngrok_url=get_ngrok_url(),
+            expires_in_hours=24,
+            message="Welcome back! Your token is still valid."
+        )
+
+    # Generate new token
+    access_token = secrets.token_urlsafe(32)
+    token_expires_at = datetime.now(timezone.utc) + timedelta(hours=24)
+
+    # Store in database
+    user = UserJoined(
+        name=body.name,
+        email=body.email,
+        access_token=access_token,
+        token_expires_at=token_expires_at
+    )
+    session.add(user)
+    session.commit()
+
+    logger.info(f"User joined demo: {body.email}")
+
+    return JoinDemoResponse(
+        access_token=access_token,
+        ngrok_url=get_ngrok_url(),
+        expires_in_hours=24,
+        message=f"Welcome {body.name}! Your demo access is ready."
+    )
+
+
+@router.get("/validate-token")
+def validate_token(token: str, session: Session = Depends(get_db)):
+    """Check if access token is valid."""
+    user = session.query(UserJoined).filter_by(access_token=token).first()
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    if not user.is_token_valid():
+        raise HTTPException(status_code=401, detail="Token expired")
+
+    # Update last accessed time
+    user.accessed_at = datetime.now(timezone.utc)
+    session.commit()
+
+    return {
+        "valid": True,
+        "name": user.name,
+        "email": user.email,
+        "expires_at": user.token_expires_at
     }
 
 
