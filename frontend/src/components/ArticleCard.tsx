@@ -16,6 +16,7 @@ type CardData = {
   recommendation: "READ" | "SKIM" | "IGNORE" | null;
   technical_insights: string[];
   categories: string[];
+  published_at?: string | null;
   estimated_reading_minutes?: number | null;
   what_happened?: string | null;
   why_it_matters?: string | null;
@@ -27,6 +28,11 @@ type CardData = {
   opened_at?: string | null;
   user_rating?: "up" | "down" | null;
 };
+
+function fmtDate(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
 
 /** Colour and label config for each recommendation tier. */
 const BADGE: Record<string, { bg: string; label: string }> = {
@@ -101,6 +107,9 @@ export default function ArticleCard({ data, onArchive, onFeedback }: Props) {
         )}
         {data.estimated_reading_minutes && (
           <span className="text-gray-400">{data.estimated_reading_minutes} min</span>
+        )}
+        {fmtDate(data.published_at) && (
+          <span className="text-gray-400">{fmtDate(data.published_at)}</span>
         )}
         {opened && <span className="text-xs text-blue-400">Opened</span>}
         {saved && <span className="text-xs text-blue-500">🔖 Saved</span>}

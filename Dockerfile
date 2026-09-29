@@ -22,8 +22,7 @@ COPY frontend/dist/ frontend/dist/
 RUN uv sync
 
 # Create directories for persistent storage
-RUN mkdir -p /data/db /data/chroma && \
-    chmod -R 777 /data
+RUN mkdir -p /data/db /data/chroma /data/kuzu_graph && chmod -R 777 /data
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \

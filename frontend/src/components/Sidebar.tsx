@@ -130,7 +130,7 @@ export default function Sidebar({ activeTab, onTabChange }: Props) {
   ];
 
   return (
-    <aside className="w-56 shrink-0 bg-white border-r border-gray-200 min-h-screen flex flex-col">
+    <aside className="w-56 shrink-0 bg-white border-r border-gray-200 h-screen sticky top-0 flex flex-col overflow-y-auto">
 
       {/* App name */}
       <div className="px-5 py-4 border-b border-gray-100">
@@ -215,10 +215,9 @@ export default function Sidebar({ activeTab, onTabChange }: Props) {
       <div className="mx-4 my-4 border-t border-gray-100" />
 
       {/* Pipeline status */}
-      <div className="px-3 flex-1">
+      <div className="px-3">
         <div className="flex items-center justify-between mb-2 px-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">Pipeline</span>
-          {/* Ollama health dot */}
           <span className="flex items-center gap-1 text-xs text-gray-400">
             <span className={`w-1.5 h-1.5 rounded-full ${status?.ollama_available ? "bg-green-500" : "bg-red-400"}`} />
             {status?.ollama_available ? "Ollama on" : "Ollama off"}
@@ -226,13 +225,13 @@ export default function Sidebar({ activeTab, onTabChange }: Props) {
         </div>
 
         <div className="space-y-0.5">
-          <StageRow icon="📥" label="Collected"   count={status?.total_articles ?? 0} />
-          <StageRow icon="🔍" label="Extracted"   count={status?.extracted ?? 0}  active={activeStage === "extracted"} />
-          <StageRow icon="🧮" label="Embedded"    count={status?.embedded ?? 0}   active={activeStage === "embedded"} />
-          <StageRow icon="⭐" label="Scored"       count={status?.scored ?? 0}     active={activeStage === "scored"} />
-          <StageRow icon="✅" label="Summarized"  count={status?.summarized ?? 0} />
+          <StageRow icon="📥" label="Collected"  count={status?.total_articles ?? 0} />
+          <StageRow icon="🔍" label="Extracted"  count={status?.extracted ?? 0}  active={activeStage === "extracted"} />
+          <StageRow icon="🧮" label="Embedded"   count={status?.embedded ?? 0}   active={activeStage === "embedded"} />
+          <StageRow icon="⭐" label="Scored"      count={status?.scored ?? 0}     active={activeStage === "scored"} />
+          <StageRow icon="✅" label="Summarized" count={status?.summarized ?? 0} />
           <StageRow icon="🚫" label="Ignored"    count={status?.ignored ?? 0} />
-          <StageRow icon="❌" label="Failed"      count={status?.failed ?? 0} />
+          <StageRow icon="❌" label="Failed"     count={status?.failed ?? 0} />
         </div>
 
         {/* Progress bar — visible while pipeline is running */}
@@ -241,9 +240,7 @@ export default function Sidebar({ activeTab, onTabChange }: Props) {
             <div className="w-full bg-gray-100 rounded-full h-1.5">
               <div
                 className="bg-blue-500 h-1.5 rounded-full transition-all duration-500"
-                style={{
-                  width: `${Math.round((status.summarized / status.total_articles) * 100)}%`,
-                }}
+                style={{ width: `${Math.round((status.summarized / status.total_articles) * 100)}%` }}
               />
             </div>
             <p className="text-xs text-gray-400 mt-1 text-center">
@@ -253,23 +250,20 @@ export default function Sidebar({ activeTab, onTabChange }: Props) {
         )}
       </div>
 
-      {/* Run Pipeline button at bottom */}
-      <div className="px-3 pb-5 pt-4 border-t border-gray-100 mt-4">
+      {/* Run Pipeline + Adapt Scoring — sits right below pipeline status */}
+      <div className="px-3 pt-3 pb-5">
         <button
           onClick={handleRun}
-          disabled={running}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium py-2 rounded-lg transition-colors"
+          disabled={running || !!status?.is_running}
+          className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium py-2 rounded-lg transition-colors"
         >
-          {running ? "Starting…" : "Run Pipeline"}
+          {status?.is_running ? "Pipeline running…" : running ? "Starting…" : "Run Pipeline"}
         </button>
         {runMessage && (
           <p className="text-xs text-center mt-1.5 text-green-600">{runMessage}</p>
         )}
-        <p className="text-xs text-gray-400 text-center mt-2">
-          Runs daily at 06:00
-        </p>
+        <p className="text-xs text-gray-400 text-center mt-2">Runs daily at 06:00</p>
 
-        {/* Adapt Scoring from feedback */}
         <button
           onClick={handleAdapt}
           disabled={adapting}

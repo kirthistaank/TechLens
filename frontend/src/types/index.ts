@@ -30,6 +30,7 @@ export interface DigestItem {
   source: string;
   score: number;
   recommendation: "READ" | "SKIM" | "IGNORE";
+  published_at: string | null;
   what_happened: string | null;
   why_it_matters: string | null;
   technical_insights: string[];
@@ -62,6 +63,7 @@ export interface Source {
 
 export interface PipelineStatus {
   ollama_available: boolean;
+  is_running: boolean;
   total_articles: number;
   pending: number;
   extracted: number;

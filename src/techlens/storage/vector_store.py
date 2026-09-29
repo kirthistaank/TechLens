@@ -135,6 +135,22 @@ def search(query_embedding: list[float], n_results: int = 10) -> list[dict]:
     return find_similar(query_embedding, n_results=n_results, max_distance=1.0)
 
 
+def delete_articles(article_ids: list[int]) -> None:
+    """
+    Remove a list of articles from the ChromaDB vector store by their SQLite IDs.
+
+    Args:
+        article_ids: List of SQLite article primary keys to remove.
+    """
+    if not article_ids:
+        return
+    try:
+        get_collection().delete(ids=[str(aid) for aid in article_ids])
+        logger.info("Deleted %d articles from ChromaDB", len(article_ids))
+    except Exception as exc:
+        logger.warning("ChromaDB delete failed: %s", exc)
+
+
 def collection_count() -> int:
     """Return the number of articles currently stored in ChromaDB."""
     try:

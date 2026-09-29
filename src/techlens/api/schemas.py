@@ -78,6 +78,7 @@ class SourceCreate(BaseModel):
 
 class PipelineStatus(BaseModel):
     ollama_available: bool
+    is_running: bool
     total_articles: int
     pending: int
     extracted: int

@@ -67,6 +67,7 @@ def build_daily_digest(session: Session) -> dict:
                 "source": a.publication,
                 "score": a.score,
                 "recommendation": a.recommendation,
+                "published_at": a.published_at.isoformat() if a.published_at else None,
                 "what_happened": a.summary_what,
                 "why_it_matters": a.summary_why,
                 "technical_insights": a.get_technical_insights(),

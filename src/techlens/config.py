@@ -46,7 +46,8 @@ class Settings(BaseSettings):
     imap_lookback_days: int = 7  # how far back to search for new newsletters
 
     # Article freshness — only collect/process articles published within this window
-    article_lookback_days: int = 7       # ignore articles older than N days
+    article_lookback_days: int = 7       # ignore articles older than N days during ingestion
+    article_purge_days: int = 7          # delete articles older than N days (unless manually archived)
     web_source_max_articles: int = 10    # max links to take from a web listing page
 
     # Thermal throttling — reduces sustained CPU load during LLM inference

@@ -51,7 +51,6 @@ router = APIRouter(prefix="/api")
 # --- Digest ---
 
 @router.get("/digest/daily", response_model=DigestOut)
-@limiter.limit("200/day;30/hour")
 def get_daily_digest(request: Request, session: Session = Depends(get_db)):
     """
     Return today's digest. If no digest record exists yet but summarized articles
@@ -388,7 +387,9 @@ def toggle_source(source_id: str, session: Session = Depends(get_db)):
 
 @router.post("/pipeline/run", status_code=202)
 def trigger_pipeline(background_tasks: BackgroundTasks):
-    from techlens.scheduling.scheduler import run_pipeline
+    from techlens.scheduling.scheduler import is_pipeline_running, run_pipeline
+    if is_pipeline_running():
+        raise HTTPException(status_code=409, detail="Pipeline is already running")
     background_tasks.add_task(run_pipeline)
     return {"message": "Pipeline started in background"}
 
@@ -396,10 +397,9 @@ def trigger_pipeline(background_tasks: BackgroundTasks):
 @router.get("/pipeline/status", response_model=PipelineStatus)
 def pipeline_status(session: Session = Depends(get_db)):
     from techlens.llm.ollama_provider import get_llm
+    from techlens.scheduling.scheduler import is_pipeline_running
     from techlens.storage.vector_store import collection_count
     llm = get_llm()
-    # Use cumulative counts: how many articles have *reached* each stage.
-    # Articles advance through stages, so a summarized/ignored article counts as extracted+scored too.
     _past_extracted = (
         ArticleStatus.extracted, ArticleStatus.scored,
         ArticleStatus.summarized, ArticleStatus.ignored,
@@ -407,6 +407,7 @@ def pipeline_status(session: Session = Depends(get_db)):
     _past_scored = (ArticleStatus.scored, ArticleStatus.summarized, ArticleStatus.ignored)
     return PipelineStatus(
         ollama_available=llm.is_available(),
+        is_running=is_pipeline_running(),
         total_articles=session.query(Article).count(),
         pending=session.query(Article).filter_by(status=ArticleStatus.pending).count(),
         extracted=session.query(Article).filter(Article.status.in_(_past_extracted)).count(),

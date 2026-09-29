@@ -8,6 +8,11 @@ import { useEffect, useRef, useState } from "react";
 import { fetchDailyDigest, RateLimitError } from "../api/client";
 import type { Digest, DigestItem } from "../types";
 
+function fmtDate(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
 const REC_STYLE: Record<string, { badge: string; border: string }> = {
   READ:   { badge: "bg-green-600 text-white",  border: "border-l-green-500" },
   SKIM:   { badge: "bg-amber-500 text-white",  border: "border-l-amber-400" },
@@ -27,7 +32,7 @@ function BriefItem({ item, index, onArchive }: BriefItemProps) {
 
   return (
     <div className={`bg-white rounded-xl border border-gray-200 border-l-4 ${style.border} p-5 shadow-sm`}>
-      {/* Header row */}
+      {/* Header row — badges only */}
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <span className="text-sm font-bold text-gray-300 w-5 shrink-0">{index + 1}</span>
         <span className={`text-xs font-bold px-2.5 py-0.5 rounded ${style.badge}`}>
@@ -36,10 +41,6 @@ function BriefItem({ item, index, onArchive }: BriefItemProps) {
         <span className={`text-xs font-bold px-2.5 py-0.5 rounded ${style.badge}`}>
           {item.score?.toFixed(0)}/100
         </span>
-        <span className="text-xs text-gray-400">{item.source}</span>
-        {item.estimated_reading_minutes && (
-          <span className="text-xs text-gray-400">{item.estimated_reading_minutes} min</span>
-        )}
       </div>
 
       {/* Title */}
@@ -47,10 +48,20 @@ function BriefItem({ item, index, onArchive }: BriefItemProps) {
         href={item.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="block text-base font-semibold text-gray-900 hover:text-blue-700 hover:underline leading-snug mb-2 ml-7"
+        className="block text-base font-semibold text-gray-900 hover:text-blue-700 hover:underline leading-snug mb-1 ml-7"
       >
         {item.title}
       </a>
+
+      {/* Meta — reading time and published date, together under the title */}
+      <div className="flex items-center gap-2 ml-7 mb-2">
+        {item.estimated_reading_minutes && (
+          <span className="text-xs text-gray-400">{item.estimated_reading_minutes} min read</span>
+        )}
+        {fmtDate(item.published_at) && (
+          <span className="text-xs text-gray-400">· {fmtDate(item.published_at)}</span>
+        )}
+      </div>
 
       {/* Why it matters */}
       {item.why_it_matters && (

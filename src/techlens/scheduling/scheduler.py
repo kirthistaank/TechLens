@@ -14,10 +14,22 @@ from techlens.config import settings
 logger = logging.getLogger(__name__)
 
 _scheduler: BackgroundScheduler | None = None
+_pipeline_running: bool = False
+
+
+def is_pipeline_running() -> bool:
+    """Return True if the pipeline is currently executing."""
+    return _pipeline_running
 
 
 def run_pipeline() -> None:
     """Full pipeline: collect → extract → embed → score → summarize → digest → email."""
+    global _pipeline_running
+    if _pipeline_running:
+        logger.warning("Pipeline already running — skipping duplicate trigger")
+        return
+    _pipeline_running = True
+
     from techlens.digest.daily_digest import build_daily_digest, send_email_digest
     from techlens.embeddings.ollama_embeddings import get_embedder
     from techlens.ingestion.rss_collector import collect_all, load_sources_from_yaml
@@ -33,27 +45,33 @@ def run_pipeline() -> None:
     llm = get_llm()
     embedder = get_embedder()
 
-    with get_session() as session:
-        load_sources_from_yaml(session)
-        collect_all(session)            # RSS + Substack feeds
-        collect_all_web(session)        # Web listing scrapers (e.g. The Batch)
-        process_pending(session)        # Extract content
-        embed_articles(session, embedder)  # Embed + semantic dedup (Phase 2)
-        score_all(session, llm)         # Score relevance
-        summarize_all(session, llm)     # Summarize READ/SKIM
+    try:
+        with get_session() as session:
+            from techlens.storage.cleanup import purge_old_articles
+            purge_old_articles(session)
+            load_sources_from_yaml(session)
+            collect_all(session)
+            collect_all_web(session)
+            process_pending(session)
+            embed_articles(session, embedder)
+            score_all(session, llm)
+            summarize_all(session, llm)
 
-        # Phase 3: knowledge graph
-        from techlens.knowledge_graph.extractor import extract_all
-        from techlens.knowledge_graph.synthesizer import synthesize_all
-        from techlens.knowledge_graph.trend_detector import detect_trends
-        extract_all(session, llm)       # Extract concepts from summaries
-        detect_trends(session, llm)     # Detect emerging trends
-        synthesize_all(session, llm)    # Cross-source synthesis cards
+            from techlens.knowledge_graph.extractor import extract_all
+            from techlens.knowledge_graph.synthesizer import synthesize_all
+            from techlens.knowledge_graph.trend_detector import detect_trends
+            extract_all(session, llm)
+            detect_trends(session, llm)
+            synthesize_all(session, llm)
 
-        digest = build_daily_digest(session)
-        send_email_digest(digest, session)
+            digest = build_daily_digest(session)
+            send_email_digest(digest, session)
 
-    logger.info("Pipeline complete")
+        logger.info("Pipeline complete")
+    except Exception:
+        logger.exception("Pipeline failed")
+    finally:
+        _pipeline_running = False
 
 
 def start_scheduler() -> None:
